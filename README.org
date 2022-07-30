@@ -1,0 +1,153 @@
+#+STARTUP: fold indent
+#+OPTIONS: tex:t toc:2 H:6 ^:{}
+
+#+TITLE: Programming in R
+#+AUTHOR: Derek Devnich
+#+BEGIN_SRC R
+#+END_SRC
+#+BEGIN_SRC bash
+#+END_SRC
+
+* Introduction to R and RStudio
+** Orientation
+#+CAPTION: Building programs that support your research workflow.
+#+NAME: Data science workflow
+[[file:images/data-science-workflow.png]]
+1. R was created by statisticians for statisticians (and other researchers)
+2. R contains multitudes; this can be good and bad
+
+** Workstation configuration
+By default, your view of your file system will be opaque. We want to make it transparent (e.g. you may have a local Desktop and a cloud Desktop folder).
+
+*** Mac OS Finder > Preferences
+Your local Desktop folder is in your Home directory.
+1. General
+   1. New finder window shows: /Users/<home>
+2. Sidebar
+   1. Favorites: /Users/<home>
+   2. iCloud: iCloud Drive
+   3. Locations: <computer name>, Cloud Storage
+3. Advanced
+   1. Show all filename extensions
+   2. Keep folders on top (all)
+
+*** Windows System > File Explorer
+Your local Desktop folder is in your Home directory or Computer directory.
+1. File > Change folder and search options > View
+   1. Files and Folders
+      1. Show hidden files, folders, and drives
+      2. Hide protected operating system files
+      3. *Uncheck* Hide extensions for known file types
+   2. Navigation Pane
+      1. Show all folders
+2. View
+   1. File name extensions
+
+** RStudio configuration
+1. Don't save or restore .RData (General > Basic)
+2. Use native pipe operator (Code > Editing)
+3. Rainbow parentheses (Editing > Display)
+4. Adjust font and syntax colors (Appearance)
+5. Move stuff around (Pane Layout)
+
+* Project management with RStudio
+** General file manangement
+#+BEGIN_SRC bash
+.
+├── my_proj.Rproj
+├── README.md
+├── 01_script.R
+├── 02_... and other scripts
+└── data
+    ├── processed
+    └── raw
+#+END_SRC
+
+* Seeking help
+
+* Data structures
+
+* Exploring data frames
+factors?
+
+* Subsetting data
+
+* Control flow
+
+* ggplot2
+skip
+
+* Vectorization
+
+* Functions explained
+
+* Writing data
+
+* Splitting and combining data frames with plyr
+skip?
+
+* Data frame manipulation with dplyr
+
+* Data frame manipulation with tidyr
+
+* Producing reports with knitr
+skip
+
+* Writing good software
+skip
+
+* Credits
+- R for Reproducible Scientific Analysis: https://swcarpentry.github.io/r-novice-gapminder/
+- Andrea Sánchez-Tapia's workshop: https://github.com/AndreaSanchezTapia/UCMerced_R
+
+* References
+1. RStudio shortcuts and tips: https://appsilon.com/rstudio-shortcuts-and-tips/
+2. How to get function code from the different object systems: https://stackoverflow.com/questions/19226816/how-can-i-view-the-source-code-for-a-function
+3. Various approaches to contrast coding: https://stats.oarc.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/
+
+   If you tell R that a factor is ordered, it defaults to Orthogonal polynomial contrasts. This means that it assumes you want it to check for linear, cubic, and quadratic trends. If you tell R that a factor is NOT ordered, it defaults to treatment contrasts: it compares all levels to a reference level. This probably doesn't make sense for lots of psych data. So if I say income is ordered, it calculates linear, quadratic etc. trends for income, which is not only not what I want, but is inappropriate unless your groups are evenly spaced. Treatment means it calculates whether each level is significantly different from a reference level (i.e. the highest income group).
+
+   So if you want first-year stats output in a design with more than 2 levels in the factor, put this at the top of the R code:
+   #+BEGIN_SRC R
+   options(contrasts = c("contr.sum","contr.poly"))
+   #+END_SRC
+
+   ~contr.sum~ is R for deviation contrasts, which you may recall as contrasts like -1, 0, 1.
+4. Instructor notes for "R for Reproducible Scientific Analysis"
+   https://swcarpentry.github.io/r-novice-gapminder/guide/
+
+
+* Data Sources
+** Additional data files
+1. Gapminder data:
+   https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_data.csv
+   https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_wide.csv
+
+* COMMENT How to export this document to other formats
+** Export to Markdown using Emacs Org mode
+Do this if you want a table of contents on Github.
+#+BEGIN_EXAMPLE
+M-x org-md-export-to-markdown
+#+END_EXAMPLE
+
+** Export to Markdown using Pandoc
+Do this if you want code syntax highlighting and a table of contents on Github.
+*** Generate generic Markdown file
+#+BEGIN_SRC bash
+pandoc README.org -o tmp.md
+#+END_SRC
+
+*** Edit generic Markdown file to remove illegal front matter
+1. Org directives
+2. Anything that isn't part of the document structure (e.g. TODO items)
+
+*** Generate Github Markdown with table of contents
+#+BEGIN_SRC bash
+pandoc -f markdown --toc --toc-depth=2 -s tmp.md -o README.md
+#+END_SRC
+
+*** Find and replace code block markers in final document
+#+BEGIN_EXAMPLE
+M-x qrr " {.r}" "r"
+M-x qrr " {.bash}" "bash"
+#+END_EXAMPLE

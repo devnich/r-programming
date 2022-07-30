@@ -1,0 +1,43 @@
+#+STARTUP: fold indent
+#+OPTIONS: tex:t toc:2 H:6 ^:{}
+
+* Comments from UC Merced statistics instructors
+** Brad LeVeck
+In the past, I've pointed incoming students towards this free Data Camp Introduction to R ( https://www.datacamp.com/courses/free-introduction-to-r ), and I think the topics listed are pretty close to what I'd consider essential. If I had to augment it, I'd say:
+
+1. More time spent on getting data into R, and the various libraries for doing so.
+2. More of an explanation of functions (writing and calling them)
+3. Loops / Apply
+4. Maybe pipes, since that's now in Base R and no longer exclusive to the Tidyverse.
+
+All that said, my general preference is to cover less stuff to avoid rushing through topics. The most important thing is for students to come in day one feeling familiar with R/Rstudio and the basics of R syntax. I can teach the rest during our intro course if students have these basics.
+
+** Rachel Ryskin
+My stats course is in the Spring so most of the students have gotten some intro to R through your Fall workshops and/or through a couple Fall classes we have in our department (Lace Padilla's "Data visualization" or Dan Hicks' "Methods of Data Science"). There's still a lot of variability in students' preparation when they get to my class though, probably related to prior experience.
+
+If I had to pick something that I would like our students to have a firmer grasp on it's actually the fundamentals of computing/programming. Some students can get pretty good at tweaking ggplot code but don't understand more basic things like how to write a function, how to navigate a file structure, etc.
+
+I hope that helps and let me know if I can give you any more info! Lace and Dan might be good people to ask as well, since they see the students in the Fall.
+
+* Instructor notes for "R for Reproducible Scientific Analysis"
+Make sure to emphasize good practices: put code in scripts, and make sure they’re version controlled. Encourage students to create script files for challenges.
+
+If you’re working in a cloud environment, get them to upload the gapminder data after the second lesson.
+
+Make sure to emphasize that matrices are vectors underneath the hood and data frames are lists underneath the hood: this will explain a lot of the esoteric behaviour encountered in basic operations.
+
+Vector recycling and function stacks are probably best explained with diagrams on a whiteboard.
+
+Be sure to actually go through examples of an R help page: help files can be intimidating at first, but knowing how to read them is tremendously useful.
+
+Be sure to show the CRAN task views, look at one of the topics.
+
+There’s a lot of content: move quickly through the earlier lessons. Their extensiveness is mostly for purposes of learning by osmosis: so that their memory will trigger later when they encounter a problem or some esoteric behaviour.
+
+Key lessons to take time on:
+
+- Data subsetting - conceptually difficult for novices
+- Functions - learners especially struggle with this
+- Data structures - worth being thorough, but you can go through it quickly.
+
+Don’t worry about being correct or knowing the material back-to-front. Use mistakes as teaching moments: the most vital skill you can impart is how to debug and recover from unexpected errors.

@@ -1,0 +1,18 @@
+# Generated documentation
+*.odt
+*.docx
+*.~lock.*
+*.orig
+tmp.md
+
+# System files
+.DS_Store
+
+# R environmental variables
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
+.Renviron
+/*.Rcheck/
+.Rproj.user/
