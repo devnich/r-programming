@@ -1,0 +1,39 @@
+---
+title: "Code Challenges"
+description: Additional materials for R Fundamentals
+---
+
+## Introduction to R and RStudio
+
+### Challenge 1
+
+What is the variable after each statement in the following program?
+
+```{r challenge_1}
+
+mass <- 47.5
+age <- 122
+mass <- mass * 2.3
+age <- age - 20
+```
+
+### Challenge 2
+
+Which is larger, mass or age?
+
+
+## Project Management
+
+```{verbatim project_tree}
+
+project_name
+├── project_name.Rproj
+├── README.md
+├── script_1.R
+├── script_2.R
+├── data
+│   ├── processed
+│   └── raw
+├── results
+└── temp
+```

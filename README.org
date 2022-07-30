@@ -16,6 +16,14 @@
 1. R was created by statisticians for statisticians (and other researchers)
 2. R contains multitudes; this can be good and bad
 
+** RStudio configuration
+1. Don't save or restore .RData (General > Basic)
+2. Use native pipe operator (Code > Editing)
+3. Ctrl+Enter executes current line (Code > Editing)
+4. Rainbow parentheses (Editing > Display)
+5. Adjust font and syntax colors (Appearance)
+6. Move stuff around (Pane Layout)
+
 ** Workstation configuration
 By default, your view of your file system will be opaque. We want to make it transparent (e.g. you may have a local Desktop and a cloud Desktop folder).
 
@@ -43,25 +51,146 @@ Your local Desktop folder is in your Home directory or Computer directory.
 2. View
    1. File name extensions
 
-** RStudio configuration
-1. Don't save or restore .RData (General > Basic)
-2. Use native pipe operator (Code > Editing)
-3. Rainbow parentheses (Editing > Display)
-4. Adjust font and syntax colors (Appearance)
-5. Move stuff around (Pane Layout)
+** Coding in RStudio
+1. Use both R scripts and R interactive console [REPL]
+   #+BEGIN_SRC R
+   print("hello")
+   #+END_SRC
+
+2. Test snippets in REPL
+3. Run, Run Lines, and Run Current Line in script
+
+** Introduction to R
+*** Using R as a calculator
+Begin with REPL, then move to script with comments
+
+#+BEGIN_SRC R
+1 + 100
+(3 + 5) * 2  # operator precedence
+5 * (3 ^ 2)  # powers
+2/10000      # outputs 2e-04
+2 * 10^(-4)  # 2e-04 explicated
+#+END_SRC
+
+*** Mathematical functions
+1. Some functions need inputs ("arguments")
+   #+BEGIN_SRC R
+   getwd()      # no argument required
+   sin(1)       # requires arg
+   log(1)       # natural log
+   #+END_SRC
+
+2. RStudio has auto-completion
+   #+BEGIN_SRC R
+   log...
+   #+END_SRC
+
+3. Use ~help()~ to find out more about a function
+   #+BEGIN_SRC R
+   help(exp)
+   exp(0.5)    # e^(1/2)
+   #+END_SRC
+
+*** Comparing things
+1. Basic comparisons
+   #+BEGIN_SRC R
+   1 == 1
+   1 != 2
+   1 < 2
+   1 <= 1
+   #+END_SRC
+
+2. Floating point numbers are tricky because of your computer's limits
+   #+BEGIN_SRC R
+   all.equal(3.0, 3.0)         # TRUE
+   all.equal(2.9999999, 3.0)   # 7 places: Gives difference
+   all.equal(2.99999999, 3.0)  # 8 places: TRUE
+   2.99999999 == 3.0           # 8 places: FALSE
+   #+END_SRC
+
+*** Variables and assignment
+1. R uses the assignment arrow (~Alt-Enter~ by default in RStudio; ~C-c C-=~ in ESS)
+   #+BEGIN_SRC R
+   # Assign a value to the variable name
+   x <- 1/40
+   #+END_SRC
+
+2. You can inspect a variable's value in the Environment tab or by evaluating it in the console
+   #+BEGIN_SRC R
+   # Evaluate the variable and echo its value to the console
+   x
+   #+END_SRC
+
+3. Variables can be re-used and re-assigned
+   #+BEGIN_SRC R
+   log(x)
+   x <- 100
+   x <- x + 1
+   y <- x * 2
+   #+END_SRC
+
+4. Use a standard naming scheme for your variables
+   #+BEGIN_SRC R
+   r.naming.scheme <- 10
+   python_naming_scheme <- 11
+   javaNamingScheme <- 12
+   #+END_SRC
+
+*** Vectorization
+Vectorize all the things! This makes idiomatic R very different from most programming languages.
+#+BEGIN_SRC R
+1:5
+2^(1:5)     # Explain this
+x <- 1:5
+x           # The variable holds a vector of numbers
+2^x
+#+END_SRC
+
+*** Managing your  environment
+#+BEGIN_SRC R
+ls()             # List the objects in the environment
+ls               # Echo the contents of ls(), i.e. the code
+rm(x)            # Remove the x object
+rm(list = ls())  # Remove all objects in environment
+#+END_SRC
+
+Note that parameter passing (~=~) is not the same as assignment (~<-~) in R!
+
+*** R Packages
+"Package" and "library" are roughly interchangeable.
+
+1. Install additional packages
+   #+BEGIN_SRC R
+   install.packages("tidyverse")
+   ## install.packages("rmarkdown")
+   #+END_SRC
+
+2. Activate a package for use
+   #+BEGIN_SRC R
+   library("tidyverse")
+   #+END_SRC
+
+*** Challenges
+See /scripts/curriculum.Rmd
 
 * Project management with RStudio
-** General file manangement
-#+BEGIN_SRC bash
-.
-├── my_proj.Rproj
+** General file management
+#+BEGIN_EXAMPLE
+project_name
+├── project_name.Rproj
 ├── README.md
-├── 01_script.R
-├── 02_... and other scripts
-└── data
-    ├── processed
-    └── raw
-#+END_SRC
+├── script_1.R
+├── script_2.R
+├── data
+│   ├── processed
+│   └── raw
+├── results
+└── temp
+#+END_EXAMPLE
+
+** Create projects with Rstudio
+1. File > New Project
+2. RStudio understands .Rproj files and will reopen everything for you
 
 * Seeking help
 
