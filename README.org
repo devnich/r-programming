@@ -20,7 +20,7 @@
 1. Don't save or restore .RData (General > Basic)
 2. Use native pipe operator (Code > Editing)
 3. Ctrl+Enter executes current line (Code > Editing)
-4. Rainbow parentheses (Editing > Display)
+4. Rainbow parentheses (Code > Display)
 5. Adjust font and syntax colors (Appearance)
 6. Move stuff around (Pane Layout)
 
@@ -59,6 +59,7 @@ Your local Desktop folder is in your Home directory or Computer directory.
 
 2. Test snippets in REPL
 3. Run, Run Lines, and Run Current Line in script
+4. Set working directory
 
 ** Introduction to R
 *** Using R as a calculator
@@ -131,9 +132,9 @@ Begin with REPL, then move to script with comments
 
 4. Use a standard naming scheme for your variables
    #+BEGIN_SRC R
-   r.naming.scheme <- 10
-   python_naming_scheme <- 11
-   javaNamingScheme <- 12
+   r.style.variable <- 10
+   python_style_variable <- 11
+   javaStyleVariable <- 12
    #+END_SRC
 
 *** Vectorization
@@ -170,11 +171,12 @@ Note that parameter passing (~=~) is not the same as assignment (~<-~) in R!
    library("tidyverse")
    #+END_SRC
 
-*** Challenges
+*** Challenges 1 and 2
 See /scripts/curriculum.Rmd
 
 * Project management with RStudio
 ** General file management
+See /scripts/curriculum.Rmd
 #+BEGIN_EXAMPLE
 project_name
 ├── project_name.Rproj
@@ -193,24 +195,282 @@ project_name
 2. RStudio understands .Rproj files and will reopen everything for you
 
 * Seeking help
+** Basic help syntax
+#+BEGIN_SRC R
+help(write.csv)
+?write.csv
+#+END_SRC
+
+** Help file format
+1. Description
+2. Usage
+3. Arguments
+4. Details
+5. Examples (highlight and run with ~C-Enter~)
+
+** Special operators
+#+BEGIN_SRC R
+help("<-")
+#+END_SRC
+
+** Library examples
+#+BEGIN_SRC R
+vignette("dplyr")
+#+END_SRC
+
+** What if you don't know where to start?
+1. RStudio autocomplete
+2. Fuzzy search
+   #+BEGIN_SRC R
+   ??set
+   #+END_SRC
+3. Browse by topic: https://cran.r-project.org/web/views/
 
 * Data structures
+** Data Frames are central to working with tabular data
+1. Create a data frame
+   #+BEGIN_SRC R
+   cats <- data.frame(coat = c("calico", "black", "tabby"),
+                      weight = c(2.1, 5.0, 3.2),
+                      likes_string = c(1, 0, 1))
+   cats      # show contents of data frame
+   str(cats) # inspect structure of data frame
+   #+END_SRC
+
+2. Write the data frame to a CSV and re-import it
+   You can use ~read.delim()~ for tab-delimited files.
+   #+BEGIN_SRC R
+   write.csv(x = cats, file = "data/feline_data.csv", row.names = FALSE)
+   cats <- read.csv(file = "data/feline_data.csv", stringsAsFactors = TRUE)
+
+   cats      # show contents of data frame
+   str(cats) # the chr column is now a factor column
+   #+END_SRC
+
+3. Access the vectors of the data frame
+   #+BEGIN_SRC R
+   cats$weight
+   cats$coat
+   #+END_SRC
+
+4. Use data frame vectors as inputs
+   #+BEGIN_SRC R
+   cats$weight + 2
+   paste("My cat is", cats$coat)
+   cats$coat + 2      # Illegal operation
+   #+END_SRC
+
+** Data types
+There are 5 basic vector types.
+#+BEGIN_SRC R
+typeof(cats$weight)
+typeof(3.14)
+typeof(1L)
+typeof(1+1i)
+typeof(TRUE)
+typeof("banana")
+#+END_SRC
+
+** Vectors and type coercion
+1. Note that there are no scalars in R; everything is a vector, even if it's a vector of length 1.
+   #+BEGIN_SRC R
+   length(cats$weight)
+   length(3.14)
+   #+END_SRC
+
+2. New vectors are empty by default
+   #+BEGIN_SRC R
+   # Vectors are logical by default
+   vector1 <- vector(length = 3)
+   vector1
+
+   # You can specify other types
+   vector2 <- vector(mode="character", length = 3)
+   vector2
+   str(vector2)
+
+   # A data frame is a list of vectors
+   str(cats$weight)
+   #+END_SRC
+
+3. A vector must be all one type. If you mix types, R will perform type coercion.
+   See coercion rules in scrips/curriculum.Rmd
+   #+BEGIN_SRC R
+   coercion_vector1 <- c(2, 6, '3')
+   coercion_vector2 <- c(0, TRUE)
+
+   coercion_vector1
+   coercion_vector2
+   #+END_SRC
+
+4. You can change vector types
+   #+BEGIN_SRC R
+   # Create a character vector
+   chr_vector <- c('0', '2', '4')
+   str(chr_vector)
+
+   # Use it to create a numeric vector
+   num_vector <- as.numeric(chr_vector)
+   str(num_vector)
+
+   # Modify your data frame in place
+   cats$likes_string <- as.logical(cats$likes_string)
+   #+END_SRC
+
+5. There are multiple ways to generate vectors
+   #+BEGIN_SRC R
+   # Two options for generating sequences
+   series1 <- 1:10
+   series2 <- seq(10)
+
+   series1
+   series2
+
+   # The seq() function is more flexible
+   series3 <- seq(10, by=0.1)
+   series3
+   #+END_SRC
+
+6. Manage your vectors
+   #+BEGIN_SRC R
+   # Don't print everything to the screen
+   length(series3)
+   head(series3, n=2)
+   tail(series3, n=4)
+   #+END_SRC
+
+   #+BEGIN_SRC R
+   # You can add informative labels to most things in R
+   name_example <- 5:8
+   names(name_example) <- c("a", "b", "c", "d")
+   name_example
+   str(name_example)
+   #+END_SRC
+
+** Challenge 3
+See /scripts/curriculum.Rmd
+
+** Data frames
+1. A vector can only hold one type. Therefore, in a data frame each data column (vector) has to be a single type.
+   #+BEGIN_SRC R
+   class(cats)    # data.frame
+   typeof(cats)   # a data frame is list of vectors
+   #+END_SRC
+
+2. Data frames have column names
+   #+BEGIN_SRC R
+   names(cats)
+   names(cats)[2] <- "weight_kg"
+   names
+   #+END_SRC
+
+** Factors
+1. Factors represent unique levels (e.g., experimental conditions)
+   #+BEGIN_SRC R
+   coats <- c("tabby", "tortoise", "tortoise", "black", "tabby")
+   str(coats)
+
+   # The reprentation has 3 levels, some of which have multiple instances
+   categories <- factor(coats)
+   str(categories)
+   #+END_SRC
+
+2. R assumes that the first factor represents the baseline level, so you may need to change your factor ordering so that it makes sense for your variables
+   #+BEGIN_SRC R
+   trials <- c("case", "control", "control", "case")
+   trial_factors <- factor(trials, levels = c("control", "case"))
+   str(trial_factors)
+   #+END_SRC
+
+** Lists
+1. Lists can contain anything
+   #+BEGIN_SRC R
+   list1 <- list(1, "a", TRUE, 1+4i)
+
+   # Inspect each element of the list
+   list1[[1]]
+   list1[[2]]
+   list1[[3]]
+   list1[[4]]
+   #+END_SRC
+
+2. This includes complex data structures
+   #+BEGIN_SRC R
+   list2 <- list(title = "Numbers", numbers = 1:10, data = TRUE)
+
+   # Single brackets retrieve a slice of the list, containing the name:value pair
+   list2[2]
+
+   # Double brackets retrieve the value, i.e. the contents of the list item
+   list2[[2]]
+
+
+   #+END_SRC
+
+3. Data frames are lists of vectors and factors
+   #+BEGIN_SRC R
+   typeof(cats)
+   #+END_SRC
+
+4. Some operations return lists, others return vectors (basically, are you getting the column with its label, or are you drilling down to the data?)
+   #+BEGIN_SRC R
+   # List slices
+   cats[1]      # list slice by index
+   cats["coat"] # list slice by name
+   cats[1, ]    # get data frame row by row number
+
+   # List contents (in this case, vectors)
+   cats[[1]]  # content by index
+   cats$coat  # content by name
+   cats[, 1]  # content by index, across all rows
+   cats[1, 1] # content by index, single row
+   #+END_SRC
+
+   1. You can inspect all of these with ~typeof()~
+   2. Note that you can address data frames by row and columns
+
+** Matrices
+#+BEGIN_SRC R
+#+END_SRC
+1. A matrix is an enhanced vector.
+   #+BEGIN_SRC R
+   # Create a matrix of zeros
+   mat1 <- matrix(0, ncol=6, nrow=3)
+
+   # Inspect it
+   class(mat1)
+   typeof(mat1)
+   str(mat1)
+   #+END_SRC
+
+2. Some operations act like a wrapped vector
+   #+BEGIN_SRC R
+   length(mat1)
+   #+END_SRC
+
+** Challenge 4
+See /scripts/curriculum.Rmd
 
 * Exploring data frames
-factors?
-
-* Subsetting data
-
-* Control flow
-
-* ggplot2
-skip
+Move to gapminder data as quickly as possible
 
 * Vectorization
 
+* Control flow
+
+* COMMENT Day 2 starts about here
+
 * Functions explained
 
+* Subsetting data
+subset vs filter
+
+* Tidyverse and pipes
+
 * Writing data
+
+* ggplot2
+skip
 
 * Splitting and combining data frames with plyr
 skip?
@@ -225,14 +485,21 @@ skip
 * Writing good software
 skip
 
+* IDE Reference
+1. Clear console
+   1. RStudio: ~C-l~
+   2. Emacs: ~C-c M-o~ / ~M-x comint-clear-buffer~
+
 * Credits
 - R for Reproducible Scientific Analysis: https://swcarpentry.github.io/r-novice-gapminder/
 - Andrea Sánchez-Tapia's workshop: https://github.com/AndreaSanchezTapia/UCMerced_R
 
 * References
 1. RStudio shortcuts and tips: https://appsilon.com/rstudio-shortcuts-and-tips/
-2. How to get function code from the different object systems: https://stackoverflow.com/questions/19226816/how-can-i-view-the-source-code-for-a-function
-3. Various approaches to contrast coding: https://stats.oarc.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/
+2. CRAN task views: https://cran.r-project.org/web/views/
+3. Why ~typeof()~ and ~class()~ give different outputs: https://stackoverflow.com/a/8857411
+4. How to get function code from the different object systems: https://stackoverflow.com/questions/19226816/how-can-i-view-the-source-code-for-a-function
+5. Various approaches to contrast coding: https://stats.oarc.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/
 
    If you tell R that a factor is ordered, it defaults to Orthogonal polynomial contrasts. This means that it assumes you want it to check for linear, cubic, and quadratic trends. If you tell R that a factor is NOT ordered, it defaults to treatment contrasts: it compares all levels to a reference level. This probably doesn't make sense for lots of psych data. So if I say income is ordered, it calculates linear, quadratic etc. trends for income, which is not only not what I want, but is inappropriate unless your groups are evenly spaced. Treatment means it calculates whether each level is significantly different from a reference level (i.e. the highest income group).
 
@@ -242,9 +509,9 @@ skip
    #+END_SRC
 
    ~contr.sum~ is R for deviation contrasts, which you may recall as contrasts like -1, 0, 1.
-4. Instructor notes for "R for Reproducible Scientific Analysis"
-   https://swcarpentry.github.io/r-novice-gapminder/guide/
 
+6. Instructor notes for "R for Reproducible Scientific Analysis"
+   https://swcarpentry.github.io/r-novice-gapminder/guide/
 
 * Data Sources
 ** Additional data files

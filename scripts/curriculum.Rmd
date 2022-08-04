@@ -37,3 +37,42 @@ project_name
 ├── results
 └── temp
 ```
+
+## Data Structures
+
+### Coercion Rules
+
+```{verbatim coercion}
+
+logical -> integer -> numeric -> complex -> character
+
+```
+
+### Challenge 3
+
+1. Make a vector with numbers 1 - 26
+2. Multiply the vector by 2
+3. Name the vector elements A - Z (Hint: there is a built-in vector called `LETTERS`)
+4. Print the last five items
+
+### Challenge 4
+
+You want to produce the following matrix:
+
+```{verbatim matrix_wrapping}
+
+     [,1] [,2]
+[1,]    4    1
+[2,]    9    5
+[3,]   10    7
+```
+
+Which of the following is correct command to do that?
+
+```{r matrix_creation_options}
+
+matrix(c(4, 1, 9, 5, 10, 7), nrow = 3)
+matrix(c(4, 9, 10, 1, 5, 7), ncol = 2, byrow = TRUE)
+matrix(c(4, 9, 10, 1, 5, 7), nrow = 2)
+matrix(c(4, 1, 9, 5, 10, 7), ncol = 2, byrow = TRUE)
+```
