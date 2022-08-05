@@ -76,3 +76,13 @@ matrix(c(4, 9, 10, 1, 5, 7), ncol = 2, byrow = TRUE)
 matrix(c(4, 9, 10, 1, 5, 7), nrow = 2)
 matrix(c(4, 1, 9, 5, 10, 7), ncol = 2, byrow = TRUE)
 ```
+
+## Exploring Data Frames
+
+### Challenge 5
+
+Create a new data frame from `gapminder` that includes the following columns:
+
+1. country
+2. year
+3. gdpPercap

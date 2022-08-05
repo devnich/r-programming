@@ -7,3 +7,6 @@ cats <- data.frame(coat = c("calico", "black", "tabby"),
 
 write.csv(x = cats, file = "data/feline_data.csv", row.names = FALSE)
 cats <- read.csv(file = "data/feline_data.csv", stringsAsFactors = TRUE)
+
+## Realistic data set
+gapminder <- read.csv("data/gapminder_data.csv", stringsAsFactors = TRUE)
