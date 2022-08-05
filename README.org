@@ -508,8 +508,6 @@ See /scripts/curriculum.Rmd
 See /scripts/curriculum.Rmd
 
 * Vectorization
-#+BEGIN_SRC R
-#+END_SRC
 1. Vector operations are element-wise by default
    #+BEGIN_SRC R
    x <- 1:4
@@ -544,6 +542,12 @@ See /scripts/curriculum.Rmd
 
    # Multiply each item by -1
    m * -1
+   #+END_SRC
+
+5. Linear algebra uses matrix multiplication
+   #+BEGIN_SRC R
+   # Multiply two vectors
+   1:4 %*% 1:4
 
    # Matrix-wise multiplication
    m2 <- matrix(1, nrow = 4, ncol = 1)
@@ -555,7 +559,7 @@ See /scripts/curriculum.Rmd
    sum(m)
    #+END_SRC
 
-5. ~apply~ lets you apply an arbitrary function to an abitrary subset of a matrix. This is an example of a higher-order function (map, apply, filter, reduce, fold, etc.)
+6. ~apply~ lets you apply an arbitrary function to an abitrary subset of a matrix. This is an example of a higher-order function (map, apply, filter, reduce, fold, etc.)
    #+BEGIN_SRC R
    apply(m, 1, mean)
    apply(m, 2, mean)
@@ -564,6 +568,71 @@ See /scripts/curriculum.Rmd
    #+END_SRC
 
 * Control flow
+** Conditionals
+1. Look at conditional statement template in curriculum.Rmd
+2. If
+   #+BEGIN_SRC R
+   x <- 8
+
+   if (x >= 10) {
+     print("x is greater than or equal to 10")
+   }
+
+   x
+   #+END_SRC
+
+3. Else
+   #+BEGIN_SRC R
+   if (x >= 10) {
+     print("x is greater than or equal to 10")
+   } else {
+     print("x is less than 10")
+   }
+   #+END_SRC
+
+4. Else If
+   #+BEGIN_SRC R
+   if (x >= 10) {
+     print("x is greater than or equal to 10")
+   } else if (x > 5) {
+     print("x is greater than 5, but less than 10")
+   } else {
+     print("x is less than 5")
+   }
+   #+END_SRC
+
+5. Vectorize your tests
+   #+BEGIN_SRC R
+   x <- 1:4
+
+   if any(x < 2) {
+     print("Some x less than 2")
+   }
+
+   if all(x < 2){
+     print("All x less than 2")
+   }
+   #+END_SRC
+
+** Iteration
+1. Look at iteration statement template in curriculum.Rmd
+2. Basic For loop
+   #+BEGIN_SRC R
+   for (i in 1:10) {
+     print(i)
+   }
+   #+END_SRC
+
+3. Nested For loop
+   #+BEGIN_SRC R
+   for (i in 1:5) {
+     for (j in c('a', 'b', 'c', 'd', 'e')) {
+       print(paste(i,j))
+     }
+   }
+   #+END_SRC
+
+4. This is where we skip the example where we append things to the end of a data frame. For loops are slow, vectorize operations are fast (and idiomatic). Use for loops where they're the appropriate tool (e.g., loading files, cycling through whole data sets, etc). We will see more of this in the section on reading and writing data.
 
 * COMMENT Day 2 starts about here
 
@@ -574,7 +643,7 @@ subset vs filter
 
 * Tidyverse and pipes
 
-* Writing data
+* Reading and writing data
 
 * ggplot2
 skip

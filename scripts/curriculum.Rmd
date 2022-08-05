@@ -86,3 +86,30 @@ Create a new data frame from `gapminder` that includes the following columns:
 1. country
 2. year
 3. gdpPercap
+
+## Control Flow
+
+### Conditional template
+```{r conditional_statements}
+
+# if
+if (condition is true) {
+    perform action
+}
+
+# if ... else
+if (condition is true) {
+    perform action
+} else {  # if the condition is false,
+    perform alternative action
+}
+```
+
+### Iteration template
+
+```{r for_loops}
+
+for (iterator in set of values) {
+  do a thing
+}
+```

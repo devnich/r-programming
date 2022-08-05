@@ -26,12 +26,15 @@
     -   [Matrices](#matrices)
     -   [Challenge 4](#challenge-4)
 -   [Exploring data frames](#exploring-data-frames)
+    -   [Challenge 5](#challenge-5)
 -   [Vectorization](#vectorization-1)
 -   [Control flow](#control-flow)
+    -   [Conditionals](#conditionals)
+    -   [Iteration](#iteration)
 -   [Functions explained](#functions-explained)
 -   [Subsetting data](#subsetting-data)
 -   [Tidyverse and pipes](#tidyverse-and-pipes)
--   [Writing data](#writing-data)
+-   [Reading and writing data](#reading-and-writing-data)
 -   [ggplot2](#ggplot2)
 -   [Splitting and combining data frames with
     plyr](#splitting-and-combining-data-frames-with-plyr)
@@ -556,9 +559,6 @@ See /scripts/curriculum.Rmd
 
 ## Matrices
 
-```r
-```
-
 1.  A matrix is an enhanced vector.
 
     ```r
@@ -583,11 +583,218 @@ See /scripts/curriculum.Rmd
 
 # Exploring data frames
 
-Move to gapminder data as quickly as possible
+```r
+```
+
+1.  Adding columns
+
+    ```r
+    age <- c(2, 3, 5)
+    cbind(cats, age)
+    cats                     # cats is unchanged
+    cats <- cbind(cats, age) # overwrite old cats
+    ```
+
+    ```r
+    # Data frames enforce consistency
+    age <- c(2, 5)
+    cbind(cats, age)
+    ```
+
+2.  Appending rows (remember, rows are lists!)
+
+    ```r
+    newRow <- list("tortoiseshell", 3.3, TRUE, 9)
+    cats <- rbind(cats, newRow)
+
+    # Legal values added, illegal values are NA
+    cats
+
+    # Update the factor set
+    levels(cats$coat) <- c(levels(cats$coat), "tortoiseshell")
+    cats <- rbind(cats, list("tortoiseshell", 3.3, TRUE, 9))
+    ```
+
+3.  Removing missing data `cats` is now polluted with missing data
+
+    ```r
+    na.omit(cats)
+    cats
+    cats <- na.omit(cats)
+    ```
+
+4.  Working with realistic data
+
+    ```r
+    gapminder <- read.csv("data/gapminder_data.csv", stringsAsFactors = TRUE)
+
+    # Get an overview of the data frame
+    str(gapminder)
+    dim(gapminder)
+
+    # It's a list
+    length(gapminder)
+    colnames(gapminder)
+
+    # Look at the data
+    summary(gapminder$gdpPercap)  # summary varies by data type
+    head(gapminder)
+    ```
+
+## Challenge 5
+
+See /scripts/curriculum.Rmd
 
 # Vectorization
 
+1.  Vector operations are element-wise by default
+
+    ```r
+    x <- 1:4
+    y <- 6:9
+    x + y
+    log(x)
+
+    # A more realistic example
+    gapminder$pop_millions <- gapminder$pop / 1e6
+    head(gapminder)
+    ```
+
+2.  Vectors of unequal length are recycled
+
+    ```r
+    z <- 1:2
+    x + z
+    ```
+
+3.  Logical comparisons
+
+    ```r
+    x > 2
+    a <- (x > 2) # you can assign the output to a variable
+
+    # Evaluate a boolean vector
+    any(a)
+    all(a)
+    ```
+
+4.  Matrix operations are also element-wise by default
+
+    ```r
+    m <- matrix(1:12, nrow=3, ncol=4)
+
+    # Multiply each item by -1
+    m * -1
+    ```
+
+5.  Linear algebra uses matrix multiplication
+
+    ```r
+    # Multiply two vectors
+    1:4 %*% 1:4
+
+    # Matrix-wise multiplication
+    m2 <- matrix(1, nrow = 4, ncol = 1)
+    m2
+    m %*% m2
+
+    # Most functions operate on the whole vector or matrix
+    mean(m)
+    sum(m)
+    ```
+
+6.  `apply` lets you apply an arbitrary function to an abitrary subset
+    of a matrix. This is an example of a higher-order function (map,
+    apply, filter, reduce, fold, etc.)
+
+    ```r
+    apply(m, 1, mean)
+    apply(m, 2, mean)
+    apply(m, 1, sum)
+    apply(m, 2, sum)
+    ```
+
 # Control flow
+
+## Conditionals
+
+1.  Look at conditional statement template in curriculum.Rmd
+
+2.  If
+
+    ```r
+    x <- 8
+
+    if (x >= 10) {
+      print("x is greater than or equal to 10")
+    }
+
+    x
+    ```
+
+3.  Else
+
+    ```r
+    if (x >= 10) {
+      print("x is greater than or equal to 10")
+    } else {
+      print("x is less than 10")
+    }
+    ```
+
+4.  Else If
+
+    ```r
+    if (x >= 10) {
+      print("x is greater than or equal to 10")
+    } else if (x > 5) {
+      print("x is greater than 5, but less than 10")
+    } else {
+      print("x is less than 5")
+    }
+    ```
+
+5.  Vectorize your tests
+
+    ```r
+    x <- 1:4
+
+    if any(x < 2) {
+      print("Some x less than 2")
+    }
+
+    if all(x < 2){
+      print("All x less than 2")
+    }
+    ```
+
+## Iteration
+
+1.  Look at iteration statement template in curriculum.Rmd
+
+2.  Basic For loop
+
+    ```r
+    for (i in 1:10) {
+      print(i)
+    }
+    ```
+
+3.  Nested For loop
+
+    ```r
+    for (i in 1:5) {
+      for (j in c('a', 'b', 'c', 'd', 'e')) {
+        print(paste(i,j))
+      }
+    }
+    ```
+
+4.  This is where we skip the example where we append things to the end
+    of a data frame. For loops are slow, vectorize operations are fast
+    (and idiomatic). Use for loops where they\'re the appropriate tool
+    (e.g., loading files, cycling through whole data sets, etc). We will
+    see more of this in the section on reading and writing data.
 
 # Functions explained
 
@@ -597,7 +804,7 @@ subset vs filter
 
 # Tidyverse and pipes
 
-# Writing data
+# Reading and writing data
 
 # ggplot2
 
