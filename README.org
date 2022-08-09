@@ -8,6 +8,10 @@
 #+BEGIN_SRC bash
 #+END_SRC
 
+* TODO Move subsetting back to, or near, its original location
+* TODO Clean up ordering and/or reduce redundancy of matrix and data frame sections throughout lesson
+
+
 * Introduction to R and RStudio
 ** Orientation
 #+CAPTION: Building programs that support your research workflow.
@@ -327,7 +331,7 @@ typeof("banana")
    series2
 
    # The seq() function is more flexible
-   series3 <- seq(10, by=0.1)
+   series3 <- seq(1, 10, by=0.1)
    series3
    #+END_SRC
 
@@ -463,7 +467,7 @@ See /scripts/curriculum.Rmd
    #+BEGIN_SRC R
    # Data frames enforce consistency
    age <- c(2, 5)
-   cbind(cats, age)
+   cats <- cbind(cats, age)
    #+END_SRC
 
 2. Appending rows (remember, rows are lists!)
@@ -506,6 +510,114 @@ See /scripts/curriculum.Rmd
 
 ** Challenge 5
 See /scripts/curriculum.Rmd
+
+* Subsetting data
+** Subset by index
+#+BEGIN_SRC R
+l <- replicate(5, sample(15), simplify = FALSE)
+#+END_SRC
+
+*** Index selection
+#+BEGIN_SRC R
+l[1]
+l[1:3]     # index range
+l[c(1, 3)] # selected indices
+#+END_SRC
+
+*** Index exclusion
+#+BEGIN_SRC R
+l[-1]
+l[-c(1, 3)]
+#+END_SRC
+
+** Subset by name
+#+BEGIN_SRC R
+letters[1:5]
+names(l) <- letters[1:5]
+#+END_SRC
+
+*** Character selection
+#+BEGIN_SRC R
+l["a"]
+l[names(l) %in% c("a", "c")]
+#+END_SRC
+
+*** Character exclusion
+#+BEGIN_SRC R
+l[! names(l) %in% c("a", "c")]
+#+END_SRC
+
+*** Extracting list elements
+Single brackets get you subsets of the same type (~list -> list~, ~vector -> vector~, etc.). Double brackets extract the underlying vector from a list or data frame.
+#+BEGIN_SRC R
+# You can extract one element
+l[[1]]
+l[["a"]]
+
+# You can't extract multiple elements
+l[[1:3]]
+l[[names(l) %in% c("a", "c")]]
+#+END_SRC
+
+** Subsetting by logical operations
+1. Explicitly set each item to TRUE or FALSE
+   #+BEGIN_SRC R
+   v <- 1:5
+   v[c(FALSE, TRUE, TRUE, FALSE, FALSE)]
+   #+END_SRC
+
+2. Evaluate the truth of each item, then produce the TRUE ones
+   #+BEGIN_SRC R
+   # Explicit version
+   truth_vec <- v > 4
+   v[truth_vec]
+
+   # Implicit version
+   v[v > 4]
+   #+END_SRC
+
+3. Combining logical operations
+   #+BEGIN_SRC R
+   v[v < 3 | v > 4]
+   #+END_SRC
+
+** Subsetting matrices
+#+BEGIN_SRC R
+m <- matrix(1:25, nrow = 5, byrow = TRUE)
+
+# Matrices are just 2D vectors
+m[2:4, 1:3]
+m[c(1, 3, 5), c(2, 4)]
+#+END_SRC
+
+** Subset by factor
+#+BEGIN_SRC R
+# First three items
+gapminder$country[1:3]
+
+# All items in factor set
+north_america <- c("Canada", "Mexico", "United States")
+gapminder$country[gapminder$country %in% north_america]
+#+END_SRC
+
+** Subsetting Data Frames
+Data frames have characteristics of both lists and matrices.
+#+BEGIN_SRC R
+# Get first three rows
+gapminder[1:3,]
+
+# Rows and columns
+gapminder[1:6, 1:3]
+gapminder[1:6, c("country", "pop")]
+
+# Data frames are lists, so one index gets you the *columns*
+gapminder[1:3]
+
+# Filter by contents
+gapminder[gapminder$country == "Mexico",]
+gapminder[gapminder$country %in% north_america,]
+gapminder[gapminder$country %in% north_america & gapminder$year > 1999,]
+#+END_SRC
 
 * Vectorization
 1. Vector operations are element-wise by default
@@ -634,33 +746,21 @@ See /scripts/curriculum.Rmd
 
 4. This is where we skip the example where we append things to the end of a data frame. For loops are slow, vectorize operations are fast (and idiomatic). Use for loops where they're the appropriate tool (e.g., loading files, cycling through whole data sets, etc). We will see more of this in the section on reading and writing data.
 
-* COMMENT Day 2 starts about here
-
 * Functions explained
-
-* Subsetting data
-subset vs filter
 
 * Tidyverse and pipes
 
 * Reading and writing data
-
-* ggplot2
-skip
+** Reading and writing tables
+** File navigation
 
 * Splitting and combining data frames with plyr
-skip?
-
 * Data frame manipulation with dplyr
-
 * Data frame manipulation with tidyr
 
+* Creating publication-quality graphics with ggplot2
 * Producing reports with knitr
-skip
-
 * Writing good software
-skip
-
 * IDE Reference
 1. Clear console
    1. RStudio: ~C-l~
