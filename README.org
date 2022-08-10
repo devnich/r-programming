@@ -8,10 +8,6 @@
 #+BEGIN_SRC bash
 #+END_SRC
 
-* TODO Move subsetting back to, or near, its original location
-* TODO Clean up ordering and/or reduce redundancy of matrix and data frame sections throughout lesson
-
-
 * Introduction to R and RStudio
 ** Orientation
 #+CAPTION: Building programs that support your research workflow.
@@ -144,11 +140,14 @@ Begin with REPL, then move to script with comments
 *** Vectorization
 Vectorize all the things! This makes idiomatic R very different from most programming languages.
 #+BEGIN_SRC R
+# Create a sequence 1 - 5
 1:5
-2^(1:5)     # Explain this
-x <- 1:5
-x           # The variable holds a vector of numbers
-2^x
+
+# Raise 2 to the Nth power for each element of the sequence
+2^(1:5)
+
+# Assign the resulting vector to a variable
+v <- 2^(1:5)
 #+END_SRC
 
 *** Managing your  environment
@@ -231,43 +230,10 @@ vignette("dplyr")
 3. Browse by topic: https://cran.r-project.org/web/views/
 
 * Data structures
-** Data Frames are central to working with tabular data
-1. Create a data frame
-   #+BEGIN_SRC R
-   cats <- data.frame(coat = c("calico", "black", "tabby"),
-                      weight = c(2.1, 5.0, 3.2),
-                      likes_string = c(1, 0, 1))
-   cats      # show contents of data frame
-   str(cats) # inspect structure of data frame
-   #+END_SRC
-
-2. Write the data frame to a CSV and re-import it
-   You can use ~read.delim()~ for tab-delimited files.
-   #+BEGIN_SRC R
-   write.csv(x = cats, file = "data/feline_data.csv", row.names = FALSE)
-   cats <- read.csv(file = "data/feline_data.csv", stringsAsFactors = TRUE)
-
-   cats      # show contents of data frame
-   str(cats) # the chr column is now a factor column
-   #+END_SRC
-
-3. Access the vectors of the data frame
-   #+BEGIN_SRC R
-   cats$weight
-   cats$coat
-   #+END_SRC
-
-4. Use data frame vectors as inputs
-   #+BEGIN_SRC R
-   cats$weight + 2
-   paste("My cat is", cats$coat)
-   cats$coat + 2      # Illegal operation
-   #+END_SRC
-
 ** Data types
-There are 5 basic vector types.
+There are 5 basic (vector) data types.
 #+BEGIN_SRC R
-typeof(cats$weight)
+typeof(v)
 typeof(3.14)
 typeof(1L)
 typeof(1+1i)
@@ -278,11 +244,11 @@ typeof("banana")
 ** Vectors and type coercion
 1. Note that there are no scalars in R; everything is a vector, even if it's a vector of length 1.
    #+BEGIN_SRC R
-   length(cats$weight)
+   length(v)
    length(3.14)
    #+END_SRC
 
-2. New vectors are empty by default
+2. (Optional) New vectors are empty by default
    #+BEGIN_SRC R
    # Vectors are logical by default
    vector1 <- vector(length = 3)
@@ -292,9 +258,6 @@ typeof("banana")
    vector2 <- vector(mode="character", length = 3)
    vector2
    str(vector2)
-
-   # A data frame is a list of vectors
-   str(cats$weight)
    #+END_SRC
 
 3. A vector must be all one type. If you mix types, R will perform type coercion.
@@ -316,9 +279,6 @@ typeof("banana")
    # Use it to create a numeric vector
    num_vector <- as.numeric(chr_vector)
    str(num_vector)
-
-   # Modify your data frame in place
-   cats$likes_string <- as.logical(cats$likes_string)
    #+END_SRC
 
 5. There are multiple ways to generate vectors
@@ -354,20 +314,6 @@ typeof("banana")
 ** Challenge 3
 See /scripts/curriculum.Rmd
 
-** Data frames
-1. A vector can only hold one type. Therefore, in a data frame each data column (vector) has to be a single type.
-   #+BEGIN_SRC R
-   class(cats)    # data.frame
-   typeof(cats)   # a data frame is list of vectors
-   #+END_SRC
-
-2. Data frames have column names
-   #+BEGIN_SRC R
-   names(cats)
-   names(cats)[2] <- "weight_kg"
-   names
-   #+END_SRC
-
 ** Factors
 1. Factors represent unique levels (e.g., experimental conditions)
    #+BEGIN_SRC R
@@ -384,6 +330,58 @@ See /scripts/curriculum.Rmd
    trials <- c("case", "control", "control", "case")
    trial_factors <- factor(trials, levels = c("control", "case"))
    str(trial_factors)
+   #+END_SRC
+
+** Data Frames are central to working with tabular data
+1. Create a data frame
+   #+BEGIN_SRC R
+   cats <- data.frame(coat = c("calico", "black", "tabby"),
+                      weight = c(2.1, 5.0, 3.2),
+                      likes_string = c(1, 0, 1))
+
+   cats         # show contents of data frame
+   str(cats)    # inspect structure of data frame
+
+   # Convert likes_string to logical vector
+   cats$likes_string <- as.logical(cats$likes_string)
+   #+END_SRC
+
+2. Write the data frame to a CSV and re-import it. You can use ~read.delim()~ for tab-delimited files, or ~read.table()~ for flexible, general-purpose input.
+   #+BEGIN_SRC R
+   write.csv(x = cats, file = "data/feline_data.csv", row.names = FALSE)
+   cats <- read.csv(file = "data/feline_data.csv", stringsAsFactors = TRUE)
+
+   str(cats) # the chr column is now a factor column
+   #+END_SRC
+
+3. Access the vectors of the data frame
+   #+BEGIN_SRC R
+   cats$weight
+   cats$coat
+   #+END_SRC
+
+4. A vector can only hold one type. Therefore, in a data frame each data column (vector) has to be a single type.
+   #+BEGIN_SRC R
+   typeof(cats$weight)
+   #+END_SRC
+
+5. Use data frame vectors can be inputs like any other vector
+   #+BEGIN_SRC R
+   cats$weight + 2
+   paste("My cat is", cats$coat)
+
+   # Operations have to be legal for the data type
+   cats$coat + 2
+
+   # Operations are ephemeral unless their outputs are reassigned to the variable
+   cats <- cats$weight + 1
+   #+END_SRC
+
+6. Data frames have column names
+   #+BEGIN_SRC R
+   names(cats)
+   names(cats)[2] <- "weight_kg"
+   names
    #+END_SRC
 
 ** Lists
@@ -424,20 +422,22 @@ See /scripts/curriculum.Rmd
    cats[1, ]    # get data frame row by row number
 
    # List contents (in this case, vectors)
-   cats[[1]]  # content by index
-   cats$coat  # content by name
-   cats[, 1]  # content by index, across all rows
-   cats[1, 1] # content by index, single row
+   cats[[1]]      # content by index
+   cats[["coat"]] # content by name
+   cats$coat      # content by name; shorthand for `cats[["coat"]]`
+   cats[, 1]      # content by index, across all rows
+   cats[1, 1]     # content by index, single row
    #+END_SRC
 
    1. You can inspect all of these with ~typeof()~
    2. Note that you can address data frames by row and columns
 
 ** Matrices
-1. A matrix is an enhanced vector.
+1. A matrix is 2-dimensional vector
    #+BEGIN_SRC R
    # Create a matrix of zeros
-   mat1 <- matrix(0, ncol=6, nrow=3)
+   mat1 <- matrix(0, ncol = 6, nrow = 3)
+   mat2 <- matrix(1:25, nrow = 5, byrow = TRUE)
 
    # Inspect it
    class(mat1)
@@ -445,9 +445,11 @@ See /scripts/curriculum.Rmd
    str(mat1)
    #+END_SRC
 
-2. Some operations act like a wrapped vector
+2. Some operations act as if the matrix is a 1-D wrapped vector
    #+BEGIN_SRC R
-   length(mat1)
+   mat2 <- matrix(1:25, nrow = 5, byrow = TRUE)
+   str(mat2)
+   length(mat2)
    #+END_SRC
 
 ** Challenge 4
@@ -620,64 +622,64 @@ gapminder[gapminder$country %in% north_america & gapminder$year > 1999,]
 #+END_SRC
 
 * Vectorization
-1. Vector operations are element-wise by default
-   #+BEGIN_SRC R
-   x <- 1:4
-   y <- 6:9
-   x + y
-   log(x)
+** Vector operations are element-wise by default
+#+begin_src R
+x <- 1:4
+y <- 6:9
+x + y
+log(x)
 
-   # A more realistic example
-   gapminder$pop_millions <- gapminder$pop / 1e6
-   head(gapminder)
-   #+END_SRC
+# A more realistic example
+gapminder$pop_millions <- gapminder$pop / 1e6
+head(gapminder)
+#+end_src
 
-2. Vectors of unequal length are recycled
-   #+BEGIN_SRC R
-   z <- 1:2
-   x + z
-   #+END_SRC
+** Vectors of unequal length are recycled
+#+begin_src R
+z <- 1:2
+x + z
+#+end_src
 
-3. Logical comparisons
-   #+BEGIN_SRC R
-   x > 2
-   a <- (x > 2) # you can assign the output to a variable
+** Logical comparisons
+#+begin_src R
+x > 2
+a <- (x > 2) # you can assign the output to a variable
 
-   # Evaluate a boolean vector
-   any(a)
-   all(a)
-   #+END_SRC
+# Evaluate a boolean vector
+any(a)
+all(a)
+#+end_src
 
-4. Matrix operations are also element-wise by default
-   #+BEGIN_SRC R
-   m <- matrix(1:12, nrow=3, ncol=4)
+** Matrix operations are also element-wise by default
+#+begin_src R
+m <- matrix(1:12, nrow=3, ncol=4)
 
-   # Multiply each item by -1
-   m * -1
-   #+END_SRC
+# Multiply each item by -1
+m * -1
+#+end_src
 
-5. Linear algebra uses matrix multiplication
-   #+BEGIN_SRC R
-   # Multiply two vectors
-   1:4 %*% 1:4
+** Linear algebra uses matrix multiplication
+#+begin_src R
+# Multiply two vectors
+1:4 %*% 1:4
 
-   # Matrix-wise multiplication
-   m2 <- matrix(1, nrow = 4, ncol = 1)
-   m2
-   m %*% m2
+# Matrix-wise multiplication
+m2 <- matrix(1, nrow = 4, ncol = 1)
+m2
+m %*% m2
 
-   # Most functions operate on the whole vector or matrix
-   mean(m)
-   sum(m)
-   #+END_SRC
+# Most functions operate on the whole vector or matrix
+mean(m)
+sum(m)
+#+end_src
 
-6. ~apply~ lets you apply an arbitrary function to an abitrary subset of a matrix. This is an example of a higher-order function (map, apply, filter, reduce, fold, etc.)
-   #+BEGIN_SRC R
-   apply(m, 1, mean)
-   apply(m, 2, mean)
-   apply(m, 1, sum)
-   apply(m, 2, sum)
-   #+END_SRC
+** ~apply~ lets you apply an arbitrary function to an abitrary subset of a matrix. This is an example of a higher-order function (map, apply, filter, reduce, fold, etc.)
+#+begin_src R
+apply(m, 1, mean)
+apply(m, 2, mean)
+apply(m, 1, sum)
+apply(m, 2, sum)
+#+end_src
 
 * Control flow
 ** Conditionals
