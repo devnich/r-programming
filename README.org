@@ -970,6 +970,7 @@ pandoc -f markdown --toc --toc-depth=2 -s tmp.md -o README.md
 
 *** Find and replace code block markers in final document
 #+BEGIN_EXAMPLE
-M-x qrr " {.r}" "r"
-M-x qrr " {.bash}" "bash"
+M-x qrr `{.r org-language="R"}` `r`
+M-x qrr ` {.r}` `r`
+M-x qrr ` {.bash}` `bash`
 #+END_EXAMPLE

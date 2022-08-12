@@ -15,33 +15,65 @@
     -   [What if you don\'t know where to
         start?](#what-if-you-dont-know-where-to-start)
 -   [Data structures](#data-structures)
-    -   [Data Frames are central to working with tabular
-        data](#data-frames-are-central-to-working-with-tabular-data)
     -   [Data types](#data-types)
     -   [Vectors and type coercion](#vectors-and-type-coercion)
     -   [Challenge 3](#challenge-3)
-    -   [Data frames](#data-frames)
     -   [Factors](#factors)
+    -   [Data Frames are central to working with tabular
+        data](#data-frames-are-central-to-working-with-tabular-data)
     -   [Lists](#lists)
     -   [Matrices](#matrices)
     -   [Challenge 4](#challenge-4)
 -   [Exploring data frames](#exploring-data-frames)
     -   [Challenge 5](#challenge-5)
+-   [Subsetting data](#subsetting-data)
+    -   [Subset by index](#subset-by-index)
+    -   [Subset by name](#subset-by-name)
+    -   [Subsetting by logical
+        operations](#subsetting-by-logical-operations)
+    -   [Subsetting matrices](#subsetting-matrices)
+    -   [Subset by factor](#subset-by-factor)
+    -   [Subsetting Data Frames](#subsetting-data-frames)
 -   [Vectorization](#vectorization-1)
+    -   [Vector operations are element-wise by
+        default](#vector-operations-are-element-wise-by-default)
+    -   [Vectors of unequal length are
+        recycled](#vectors-of-unequal-length-are-recycled)
+    -   [Logical comparisons](#logical-comparisons)
+    -   [Matrix operations are also element-wise by
+        default](#matrix-operations-are-also-element-wise-by-default)
+    -   [Linear algebra uses matrix
+        multiplication](#linear-algebra-uses-matrix-multiplication)
+    -   [`apply` lets you apply an arbitrary function to an abitrary
+        subset of a matrix. This is an example of a higher-order
+        function (map, apply, filter, reduce, fold,
+        etc.)](#apply-lets-you-apply-an-arbitrary-function-to-an-abitrary-subset-of-a-matrix.-this-is-an-example-of-a-higher-order-function-map-apply-filter-reduce-fold-etc.)
 -   [Control flow](#control-flow)
     -   [Conditionals](#conditionals)
+    -   [Review Subsetting section](#review-subsetting-section)
     -   [Iteration](#iteration)
 -   [Functions explained](#functions-explained)
--   [Subsetting data](#subsetting-data)
--   [Tidyverse and pipes](#tidyverse-and-pipes)
+    -   [Defining a function](#defining-a-function)
+    -   [Combining functions](#combining-functions)
+    -   [Defensive programming](#defensive-programming)
+    -   [Working with rich data](#working-with-rich-data)
+    -   [Challenge 6](#challenge-6)
 -   [Reading and writing data](#reading-and-writing-data)
--   [ggplot2](#ggplot2)
+    -   [Create sample data sets and write them to the \`data\`
+        directory](#create-sample-data-sets-and-write-them-to-the-data-directory)
+    -   [How to find files](#how-to-find-files)
+    -   [Read files using a for loop](#read-files-using-a-for-loop)
+    -   [Read files using apply](#read-files-using-apply)
+    -   [Read files using apply with
+        pipes](#read-files-using-apply-with-pipes)
+-   [Data frame manipulation with
+    dplyr](#data-frame-manipulation-with-dplyr)
 -   [Splitting and combining data frames with
     plyr](#splitting-and-combining-data-frames-with-plyr)
 -   [Data frame manipulation with
-    dplyr](#data-frame-manipulation-with-dplyr)
--   [Data frame manipulation with
     tidyr](#data-frame-manipulation-with-tidyr)
+-   [Creating publication-quality graphics with
+    ggplot2](#creating-publication-quality-graphics-with-ggplot2)
 -   [Producing reports with knitr](#producing-reports-with-knitr)
 -   [Writing good software](#writing-good-software)
 -   [IDE Reference](#ide-reference)
@@ -217,11 +249,14 @@ Vectorize all the things! This makes idiomatic R very different from
 most programming languages.
 
 ```r
+# Create a sequence 1 - 5
 1:5
-2^(1:5)     # Explain this
-x <- 1:5
-x           # The variable holds a vector of numbers
-2^x
+
+# Raise 2 to the Nth power for each element of the sequence
+2^(1:5)
+
+# Assign the resulting vector to a variable
+v <- 2^(1:5)
 ```
 
 ### Managing your environment
@@ -324,50 +359,12 @@ vignette("dplyr")
 
 # Data structures
 
-## Data Frames are central to working with tabular data
-
-1.  Create a data frame
-
-    ```r
-    cats <- data.frame(coat = c("calico", "black", "tabby"),
-                       weight = c(2.1, 5.0, 3.2),
-                       likes_string = c(1, 0, 1))
-    cats      # show contents of data frame
-    str(cats) # inspect structure of data frame
-    ```
-
-2.  Write the data frame to a CSV and re-import it You can use
-    `read.delim()` for tab-delimited files.
-
-    ```r
-    write.csv(x = cats, file = "data/feline_data.csv", row.names = FALSE)
-    cats <- read.csv(file = "data/feline_data.csv", stringsAsFactors = TRUE)
-
-    cats      # show contents of data frame
-    str(cats) # the chr column is now a factor column
-    ```
-
-3.  Access the vectors of the data frame
-
-    ```r
-    cats$weight
-    cats$coat
-    ```
-
-4.  Use data frame vectors as inputs
-
-    ```r
-    cats$weight + 2
-    paste("My cat is", cats$coat)
-    cats$coat + 2      # Illegal operation
-    ```
-
 ## Data types
 
-There are 5 basic vector types.
+There are 5 basic (vector) data types.
 
 ```r
-typeof(cats$weight)
+typeof(v)
 typeof(3.14)
 typeof(1L)
 typeof(1+1i)
@@ -381,11 +378,11 @@ typeof("banana")
     it\'s a vector of length 1.
 
     ```r
-    length(cats$weight)
+    length(v)
     length(3.14)
     ```
 
-2.  New vectors are empty by default
+2.  (Optional) New vectors are empty by default
 
     ```r
     # Vectors are logical by default
@@ -396,9 +393,6 @@ typeof("banana")
     vector2 <- vector(mode="character", length = 3)
     vector2
     str(vector2)
-
-    # A data frame is a list of vectors
-    str(cats$weight)
     ```
 
 3.  A vector must be all one type. If you mix types, R will perform type
@@ -422,9 +416,6 @@ typeof("banana")
     # Use it to create a numeric vector
     num_vector <- as.numeric(chr_vector)
     str(num_vector)
-
-    # Modify your data frame in place
-    cats$likes_string <- as.logical(cats$likes_string)
     ```
 
 5.  There are multiple ways to generate vectors
@@ -438,7 +429,7 @@ typeof("banana")
     series2
 
     # The seq() function is more flexible
-    series3 <- seq(10, by=0.1)
+    series3 <- seq(1, 10, by=0.1)
     series3
     ```
 
@@ -463,24 +454,6 @@ typeof("banana")
 
 See /scripts/curriculum.Rmd
 
-## Data frames
-
-1.  A vector can only hold one type. Therefore, in a data frame each
-    data column (vector) has to be a single type.
-
-    ```r
-    class(cats)    # data.frame
-    typeof(cats)   # a data frame is list of vectors
-    ```
-
-2.  Data frames have column names
-
-    ```r
-    names(cats)
-    names(cats)[2] <- "weight_kg"
-    names
-    ```
-
 ## Factors
 
 1.  Factors represent unique levels (e.g., experimental conditions)
@@ -502,6 +475,68 @@ See /scripts/curriculum.Rmd
     trials <- c("case", "control", "control", "case")
     trial_factors <- factor(trials, levels = c("control", "case"))
     str(trial_factors)
+    ```
+
+## Data Frames are central to working with tabular data
+
+1.  Create a data frame
+
+    ```r
+    cats <- data.frame(coat = c("calico", "black", "tabby"),
+                       weight = c(2.1, 5.0, 3.2),
+                       likes_string = c(1, 0, 1))
+
+    cats         # show contents of data frame
+    str(cats)    # inspect structure of data frame
+
+    # Convert likes_string to logical vector
+    cats$likes_string <- as.logical(cats$likes_string)
+    ```
+
+2.  Write the data frame to a CSV and re-import it. You can use
+    `read.delim()` for tab-delimited files, or `read.table()` for
+    flexible, general-purpose input.
+
+    ```r
+    write.csv(x = cats, file = "data/feline_data.csv", row.names = FALSE)
+    cats <- read.csv(file = "data/feline_data.csv", stringsAsFactors = TRUE)
+
+    str(cats) # the chr column is now a factor column
+    ```
+
+3.  Access the vectors of the data frame
+
+    ```r
+    cats$weight
+    cats$coat
+    ```
+
+4.  A vector can only hold one type. Therefore, in a data frame each
+    data column (vector) has to be a single type.
+
+    ```r
+    typeof(cats$weight)
+    ```
+
+5.  Use data frame vectors can be inputs like any other vector
+
+    ```r
+    cats$weight + 2
+    paste("My cat is", cats$coat)
+
+    # Operations have to be legal for the data type
+    cats$coat + 2
+
+    # Operations are ephemeral unless their outputs are reassigned to the variable
+    cats <- cats$weight + 1
+    ```
+
+6.  Data frames have column names
+
+    ```r
+    names(cats)
+    names(cats)[2] <- "weight_kg"
+    names
     ```
 
 ## Lists
@@ -548,10 +583,11 @@ See /scripts/curriculum.Rmd
     cats[1, ]    # get data frame row by row number
 
     # List contents (in this case, vectors)
-    cats[[1]]  # content by index
-    cats$coat  # content by name
-    cats[, 1]  # content by index, across all rows
-    cats[1, 1] # content by index, single row
+    cats[[1]]      # content by index
+    cats[["coat"]] # content by name
+    cats$coat      # content by name; shorthand for `cats[["coat"]]`
+    cats[, 1]      # content by index, across all rows
+    cats[1, 1]     # content by index, single row
     ```
 
     1.  You can inspect all of these with `typeof()`
@@ -559,11 +595,12 @@ See /scripts/curriculum.Rmd
 
 ## Matrices
 
-1.  A matrix is an enhanced vector.
+1.  A matrix is 2-dimensional vector
 
     ```r
     # Create a matrix of zeros
-    mat1 <- matrix(0, ncol=6, nrow=3)
+    mat1 <- matrix(0, ncol = 6, nrow = 3)
+    mat2 <- matrix(1:25, nrow = 5, byrow = TRUE)
 
     # Inspect it
     class(mat1)
@@ -571,10 +608,12 @@ See /scripts/curriculum.Rmd
     str(mat1)
     ```
 
-2.  Some operations act like a wrapped vector
+2.  Some operations act as if the matrix is a 1-D wrapped vector
 
     ```r
-    length(mat1)
+    mat2 <- matrix(1:25, nrow = 5, byrow = TRUE)
+    str(mat2)
+    length(mat2)
     ```
 
 ## Challenge 4
@@ -598,7 +637,7 @@ See /scripts/curriculum.Rmd
     ```r
     # Data frames enforce consistency
     age <- c(2, 5)
-    cbind(cats, age)
+    cats <- cbind(cats, age)
     ```
 
 2.  Appending rows (remember, rows are lists!)
@@ -645,80 +684,206 @@ See /scripts/curriculum.Rmd
 
 See /scripts/curriculum.Rmd
 
+# Subsetting data
+
+## Subset by index
+
+```r
+l <- replicate(5, sample(15), simplify = FALSE)
+```
+
+### Index selection
+
+```r
+l[1]
+l[1:3]     # index range
+l[c(1, 3)] # selected indices
+```
+
+### Index exclusion
+
+```r
+l[-1]
+l[-c(1, 3)]
+```
+
+## Subset by name
+
+```r
+letters[1:5]
+names(l) <- letters[1:5]
+```
+
+### Character selection
+
+```r
+l["a"]
+l[names(l) %in% c("a", "c")]
+```
+
+### Character exclusion
+
+```r
+l[! names(l) %in% c("a", "c")]
+```
+
+### Extracting list elements
+
+Single brackets get you subsets of the same type (`list -> list`,
+`vector -> vector`, etc.). Double brackets extract the underlying vector
+from a list or data frame.
+
+```r
+# You can extract one element
+l[[1]]
+l[["a"]]
+
+# You can't extract multiple elements
+l[[1:3]]
+l[[names(l) %in% c("a", "c")]]
+```
+
+## Subsetting by logical operations
+
+1.  Explicitly set each item to TRUE or FALSE
+
+    ```r
+    v <- 1:5
+    v[c(FALSE, TRUE, TRUE, FALSE, FALSE)]
+    ```
+
+2.  Evaluate the truth of each item, then produce the TRUE ones
+
+    ```r
+    # Explicit version
+    truth_vec <- v > 4
+    v[truth_vec]
+
+    # Implicit version
+    v[v > 4]
+    ```
+
+3.  Combining logical operations
+
+    ```r
+    v[v < 3 | v > 4]
+    ```
+
+## Subsetting matrices
+
+```r
+m <- matrix(1:25, nrow = 5, byrow = TRUE)
+
+# Matrices are just 2D vectors
+m[2:4, 1:3]
+m[c(1, 3, 5), c(2, 4)]
+```
+
+## Subset by factor
+
+```r
+# First three items
+gapminder$country[1:3]
+
+# All items in factor set
+north_america <- c("Canada", "Mexico", "United States")
+gapminder$country[gapminder$country %in% north_america]
+```
+
+## Subsetting Data Frames
+
+Data frames have characteristics of both lists and matrices.
+
+```r
+# Get first three rows
+gapminder[1:3,]
+
+# Rows and columns
+gapminder[1:6, 1:3]
+gapminder[1:6, c("country", "pop")]
+
+# Data frames are lists, so one index gets you the *columns*
+gapminder[1:3]
+
+# Filter by contents
+gapminder[gapminder$country == "Mexico",]
+north_america <- c("Canada", "Mexico", "United States")
+gapminder[gapminder$country %in% north_america,]
+gapminder[gapminder$country %in% north_america & gapminder$year > 1999,]
+```
+
 # Vectorization
 
-1.  Vector operations are element-wise by default
+## Vector operations are element-wise by default
 
-    ```r
-    x <- 1:4
-    y <- 6:9
-    x + y
-    log(x)
+```r
+x <- 1:4
+y <- 6:9
+x + y
+log(x)
 
-    # A more realistic example
-    gapminder$pop_millions <- gapminder$pop / 1e6
-    head(gapminder)
-    ```
+# A more realistic example
+gapminder$pop_millions <- gapminder$pop / 1e6
+head(gapminder)
+```
 
-2.  Vectors of unequal length are recycled
+## Vectors of unequal length are recycled
 
-    ```r
-    z <- 1:2
-    x + z
-    ```
+```r
+z <- 1:2
+x + z
+```
 
-3.  Logical comparisons
+## Logical comparisons
 
-    ```r
-    x > 2
-    a <- (x > 2) # you can assign the output to a variable
+```r
+x > 2
+a <- (x > 2) # you can assign the output to a variable
 
-    # Evaluate a boolean vector
-    any(a)
-    all(a)
-    ```
+# Evaluate a boolean vector
+any(a)
+all(a)
+```
 
-4.  Matrix operations are also element-wise by default
+## Matrix operations are also element-wise by default
 
-    ```r
-    m <- matrix(1:12, nrow=3, ncol=4)
+```r
+m <- matrix(1:12, nrow=3, ncol=4)
 
-    # Multiply each item by -1
-    m * -1
-    ```
+# Multiply each item by -1
+m * -1
+```
 
-5.  Linear algebra uses matrix multiplication
+## Linear algebra uses matrix multiplication
 
-    ```r
-    # Multiply two vectors
-    1:4 %*% 1:4
+```r
+# Multiply two vectors
+1:4 %*% 1:4
 
-    # Matrix-wise multiplication
-    m2 <- matrix(1, nrow = 4, ncol = 1)
-    m2
-    m %*% m2
+# Matrix-wise multiplication
+m2 <- matrix(1, nrow = 4, ncol = 1)
+m2
+m %*% m2
 
-    # Most functions operate on the whole vector or matrix
-    mean(m)
-    sum(m)
-    ```
+# Most functions operate on the whole vector or matrix
+mean(m)
+sum(m)
+```
 
-6.  `apply` lets you apply an arbitrary function to an abitrary subset
-    of a matrix. This is an example of a higher-order function (map,
-    apply, filter, reduce, fold, etc.)
+## `apply` lets you apply an arbitrary function to an abitrary subset of a matrix. This is an example of a higher-order function (map, apply, filter, reduce, fold, etc.)
 
-    ```r
-    apply(m, 1, mean)
-    apply(m, 2, mean)
-    apply(m, 1, sum)
-    apply(m, 2, sum)
-    ```
+```r
+apply(m, 1, mean)
+apply(m, 2, mean)
+apply(m, 1, sum)
+apply(m, 2, sum)
+```
 
 # Control flow
 
 ## Conditionals
 
-1.  Look at conditional statement template in curriculum.Rmd
+1.  Look at Conditional template in curriculum.Rmd
 
 2.  If
 
@@ -768,9 +933,13 @@ See /scripts/curriculum.Rmd
     }
     ```
 
+## Review Subsetting section
+
+Subsetting is frequently an alternative to if-else statements in R
+
 ## Iteration
 
-1.  Look at iteration statement template in curriculum.Rmd
+1.  Look at Iteration template in curriculum.Rmd
 
 2.  Basic For loop
 
@@ -798,33 +967,202 @@ See /scripts/curriculum.Rmd
 
 # Functions explained
 
-# Subsetting data
+Functions let you encapsulate and re-use chunks of code. This has
+several benefits:
 
-subset vs filter
+1.  Eliminates repetition in your code. This saves labor, but more
+    importantly it reduces errors, and makes it easier for you to find
+    and correct errors.
+2.  Allows you to write more generic (i.e. flexible) code.
+3.  Reduces cognitive overhead.
 
-# Tidyverse and pipes
+## Defining a function
+
+1.  Look at Function template in data/curriculum.Rmd
+
+2.  Define a simple function
+
+    ```r
+    # Convert Fahrenheit to Celcius
+    f_to_celcius <- function(temp) {
+      celcius <- (temp - 32) * (5/9)
+      return(celcius)
+    }
+    ```
+
+3.  Call the function
+
+    ```r
+    f_to_celcius(32)
+    boiling <- f_to_celcius(212)
+    ```
+
+## Combining functions
+
+Define a second function and call the first function within the second.
+
+```r
+f_to_kelvin <- function(temp) {
+  celcius <- f_to_celcius(temp)
+  kelvin <- celcius + 273.15
+  return(kelvin)
+}
+
+f_to_kelvin(212)
+```
+
+## Defensive programming
+
+1.  Check whether input meets criteria before proceeding (this is
+    \`assert\` in other languages).
+
+    ```r
+    f_to_celcius <- function(temp) {
+      stopifnot(is.numeric(temp), temp > -460)
+      celcius <- (temp - 32) * (5/9)
+      return(celcius)
+    }
+
+    f_to_celcius("a")
+    f_to_celcius(-470)
+    ```
+
+2.  (Optional) Fail with a custom error if criterion not met
+
+    ```r
+    f_to_celcius <- function(temp) {
+      if(!is.numeric(temp)) {
+        stop("temp must be a numeric vector")
+      }
+      celcius <- (temp - 32) * (5/9)
+      return(celcius)
+    }
+    ```
+
+## Working with rich data
+
+1.  Write a function to perform a total GDP calculation on a filtered
+    subset of your data.
+
+    ```r
+    calcGDP <- function(df, year=NULL, country=NULL) {
+      if(!is.null(year)) {
+        df <- df[df$year %in% year, ]
+      }
+      if (!is.null(country)) {
+        df <- df[df$country %in% country,]
+      }
+      gdp <- df$pop * df$gdpPercap
+
+      new_df <- cbind(df, totalGDP=gdp)
+      return(new_df)
+    }
+    ```
+
+2.  Mutating \`df\` inside the function doesn\'t affect the global
+    \`gapminder\` data frame. What happens in the function stays in the
+    function; this is called scope.
+
+## Challenge 6
+
+See data/curriculum.Rmd
 
 # Reading and writing data
 
-# ggplot2
+## Create sample data sets and write them to the \`data\` directory
 
-skip
+```r
+for (year in unique(gapminder$year)) {
+  df <- calcGDP(gapminder, year = year, country = north_america)
 
-# Splitting and combining data frames with plyr
+  ## Generate a file name
+  fname <- paste("data/north_america_", as.character(year), ".csv", sep = "")
 
-skip?
+  ## Write the file
+  write.csv(x = df, file = fname, row.names = FALSE)
+}
+```
+
+## How to find files
+
+```r
+## Get matching files from the `data` subdirectory
+dir(path = "data", pattern = "north_america_[1-9]*.csv")
+```
+
+## Read files using a for loop
+
+1.  Read each file into a data frame and add it to a list
+
+    ```r
+    ## Create an empty list
+    df_list <- list()
+
+    ## Get the locations of the matching files
+    file_names <- dir(path = "data", pattern = "north_america_[1-9]*.csv")
+
+    for (f in file_names){
+      df_list[[f]] <- read.csv(file = file.path("data", f))
+    }
+    ```
+
+2.  Access the list items to view the individual data frames
+
+    ```r
+    length(df_list)
+    names(df_list)
+    df_list[["north_america_1.csv"]]
+    ```
+
+## Read files using apply
+
+1.  Instead of a for loop that handles each file individually, use a
+    single vectorized function.
+
+    ```r
+    file_names <- dir(path = "data", pattern = "north_america_[1-9]*.csv")
+    df_list <- lapply(file.path("data", file_names), read.csv)
+    ```
+
+2.  This doesn\'t add names by default, so you will have to add them
+    manually
+
+    ```r
+    ## You can still access by index position
+    df_list[[1]]
+
+    names(df_list)
+    names(df_list) <- file_names
+    df_list[["north_america_1952.csv"]]
+    ```
+
+## Read files using apply with pipes
+
+Pipes allow you to use an alternative formatting for collections of
+functions that can be easier to read.
+
+```r
+df_list <- file.path("data", file_names) |>
+    lapply(read.csv)
+```
 
 # Data frame manipulation with dplyr
 
+1.  Explain Tidyverse briefly: <https://www.tidyverse.org/packages/>
+2.  Explain tibbles briefly
+
+# Splitting and combining data frames with plyr
+
+Briefly describe split-apply-combine aggregate files to a single
+dataframe
+
 # Data frame manipulation with tidyr
+
+# Creating publication-quality graphics with ggplot2
 
 # Producing reports with knitr
 
-skip
-
 # Writing good software
-
-skip
 
 # IDE Reference
 
