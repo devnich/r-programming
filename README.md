@@ -715,20 +715,20 @@ v[-c(1, 3)]
 
 ```r
 letters[1:5]
-names(l) <- letters[1:5]
+names(v) <- letters[1:5]
 ```
 
 ### Character selection
 
 ```r
 v["a"]
-v[names(l) %in% c("a", "c")]
+v[names(v) %in% c("a", "c")]
 ```
 
 ### Character exclusion
 
 ```r
-v[! names(l) %in% c("a", "c")]
+v[! names(v) %in% c("a", "c")]
 ```
 
 ## (Optional) Extracting list elements
