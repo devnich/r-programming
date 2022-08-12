@@ -113,3 +113,21 @@ for (iterator in set of values) {
   do a thing
 }
 ```
+
+## Functions
+
+### Function template
+
+```{r functions}
+
+my_function <- function(parameters) {
+  # perform action
+  # return value
+}
+```
+
+### Challenge 6
+
+1. Calculate the total GDP for each North American country in 1952 and 1957
+2. Save your results as a CSV file called `north_america_1.csv` in a subfolder called `data`.
+

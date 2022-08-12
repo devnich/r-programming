@@ -617,6 +617,7 @@ gapminder[1:3]
 
 # Filter by contents
 gapminder[gapminder$country == "Mexico",]
+north_america <- c("Canada", "Mexico", "United States")
 gapminder[gapminder$country %in% north_america,]
 gapminder[gapminder$country %in% north_america & gapminder$year > 1999,]
 #+END_SRC
@@ -683,7 +684,7 @@ apply(m, 2, sum)
 
 * Control flow
 ** Conditionals
-1. Look at conditional statement template in curriculum.Rmd
+1. Look at Conditional template in curriculum.Rmd
 2. If
    #+BEGIN_SRC R
    x <- 8
@@ -728,8 +729,11 @@ apply(m, 2, sum)
    }
    #+END_SRC
 
+** Review Subsetting section
+Subsetting is frequently an alternative to if-else statements in R
+
 ** Iteration
-1. Look at iteration statement template in curriculum.Rmd
+1. Look at Iteration template in curriculum.Rmd
 2. Basic For loop
    #+BEGIN_SRC R
    for (i in 1:10) {
@@ -749,15 +753,159 @@ apply(m, 2, sum)
 4. This is where we skip the example where we append things to the end of a data frame. For loops are slow, vectorize operations are fast (and idiomatic). Use for loops where they're the appropriate tool (e.g., loading files, cycling through whole data sets, etc). We will see more of this in the section on reading and writing data.
 
 * Functions explained
+Functions let you encapsulate and re-use chunks of code. This has several benefits:
+1. Eliminates repetition in your code. This saves labor, but more importantly it reduces errors, and makes it easier for you to find and correct errors.
+2. Allows you to write more generic (i.e. flexible) code.
+3. Reduces cognitive overhead.
 
-* Tidyverse and pipes
+** Defining a function
+1. Look at Function template in data/curriculum.Rmd
+2. Define a simple function
+   #+BEGIN_SRC R
+   # Convert Fahrenheit to Celcius
+   f_to_celcius <- function(temp) {
+     celcius <- (temp - 32) * (5/9)
+     return(celcius)
+   }
+   #+END_SRC
+
+3. Call the function
+   #+BEGIN_SRC R
+   f_to_celcius(32)
+   boiling <- f_to_celcius(212)
+   #+END_SRC
+
+** Combining functions
+Define a second function and call the first function within the second.
+#+BEGIN_SRC R
+f_to_kelvin <- function(temp) {
+  celcius <- f_to_celcius(temp)
+  kelvin <- celcius + 273.15
+  return(kelvin)
+}
+
+f_to_kelvin(212)
+#+END_SRC
+
+** Defensive programming
+1. Check whether input meets criteria before proceeding (this is `assert` in other languages).
+   #+BEGIN_SRC R
+   f_to_celcius <- function(temp) {
+     stopifnot(is.numeric(temp), temp > -460)
+     celcius <- (temp - 32) * (5/9)
+     return(celcius)
+   }
+
+   f_to_celcius("a")
+   f_to_celcius(-470)
+   #+END_SRC
+
+2. (Optional) Fail with a custom error if criterion not met
+   #+BEGIN_SRC R
+   f_to_celcius <- function(temp) {
+     if(!is.numeric(temp)) {
+       stop("temp must be a numeric vector")
+     }
+     celcius <- (temp - 32) * (5/9)
+     return(celcius)
+   }
+   #+END_SRC
+
+** Working with rich data
+1. Write a function to perform a total GDP calculation on a filtered subset of your data.
+   #+BEGIN_SRC R
+   calcGDP <- function(df, year=NULL, country=NULL) {
+     if(!is.null(year)) {
+       df <- df[df$year %in% year, ]
+     }
+     if (!is.null(country)) {
+       df <- df[df$country %in% country,]
+     }
+     gdp <- df$pop * df$gdpPercap
+
+     new_df <- cbind(df, totalGDP=gdp)
+     return(new_df)
+   }
+   #+END_SRC
+
+2. Mutating `df` inside the function doesn't affect the global `gapminder` data frame. What happens in the function stays in the function; this is called scope.
+
+** Challenge 6
+See data/curriculum.Rmd
 
 * Reading and writing data
-** Reading and writing tables
-** File navigation
+** Create sample data sets and write them to the `data` directory
+#+BEGIN_SRC R
+for (year in unique(gapminder$year)) {
+  df <- calcGDP(gapminder, year = year, country = north_america)
+
+  ## Generate a file name
+  fname <- paste("data/north_america_", as.character(year), ".csv", sep = "")
+
+  ## Write the file
+  write.csv(x = df, file = fname, row.names = FALSE)
+}
+#+END_SRC
+
+** How to find files
+#+BEGIN_SRC R
+## Get matching files from the `data` subdirectory
+dir(path = "data", pattern = "north_america_[1-9]*.csv")
+#+END_SRC
+
+** Read files using a for loop
+1. Read each file into a data frame and add it to a list
+   #+BEGIN_SRC R
+   ## Create an empty list
+   df_list <- list()
+
+   ## Get the locations of the matching files
+   file_names <- dir(path = "data", pattern = "north_america_[1-9]*.csv")
+
+   for (f in file_names){
+     df_list[[f]] <- read.csv(file = file.path("data", f))
+   }
+   #+END_SRC
+
+2. Access the list items to view the individual data frames
+   #+BEGIN_SRC R
+   length(df_list)
+   names(df_list)
+   df_list[["north_america_1.csv"]]
+   #+END_SRC
+
+** Read files using apply
+1. Instead of a for loop that handles each file individually, use a single vectorized function.
+   #+BEGIN_SRC R
+   file_names <- dir(path = "data", pattern = "north_america_[1-9]*.csv")
+   df_list <- lapply(file.path("data", file_names), read.csv)
+   #+END_SRC
+
+2. This doesn't add names by default, so you will have to add them manually
+   #+BEGIN_SRC R
+   ## You can still access by index position
+   df_list[[1]]
+
+   names(df_list)
+   names(df_list) <- file_names
+   df_list[["north_america_1952.csv"]]
+   #+END_SRC
+
+** Read files using apply with pipes
+Pipes allow you to use an alternative formatting for collections of functions that can be easier to read.
+#+BEGIN_SRC R
+df_list <- file.path("data", file_names) |>
+    lapply(read.csv)
+#+END_SRC
+
+* Data frame manipulation with dplyr
+1. Explain Tidyverse briefly: https://www.tidyverse.org/packages/
+2. Explain tibbles briefly
 
 * Splitting and combining data frames with plyr
-* Data frame manipulation with dplyr
+Briefly describe split-apply-combine
+aggregate files to a single dataframe
+
 * Data frame manipulation with tidyr
 
 * Creating publication-quality graphics with ggplot2

@@ -16,3 +16,7 @@ tmp.md
 .Renviron
 /*.Rcheck/
 .Rproj.user/
+
+# Data folders except gapminder data
+data/*
+!data/gapminder*
