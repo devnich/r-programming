@@ -29,10 +29,12 @@
 -   [Subsetting data](#subsetting-data)
     -   [Subset by index](#subset-by-index)
     -   [Subset by name](#subset-by-name)
+    -   [(Optional) Extracting list
+        elements](#optional-extracting-list-elements)
     -   [Subsetting by logical
         operations](#subsetting-by-logical-operations)
     -   [Subsetting matrices](#subsetting-matrices)
-    -   [Subset by factor](#subset-by-factor)
+    -   [(Optional) Subset by factor](#optional-subset-by-factor)
     -   [Subsetting Data Frames](#subsetting-data-frames)
 -   [Vectorization](#vectorization-1)
     -   [Vector operations are element-wise by
@@ -66,6 +68,8 @@
     -   [Read files using apply](#read-files-using-apply)
     -   [Read files using apply with
         pipes](#read-files-using-apply-with-pipes)
+    -   [(Optional) Review using \`apply\` with
+        matrices](#optional-review-using-apply-with-matrices)
 -   [Data frame manipulation with
     dplyr](#data-frame-manipulation-with-dplyr)
 -   [Splitting and combining data frames with
@@ -689,22 +693,22 @@ See /scripts/curriculum.Rmd
 ## Subset by index
 
 ```r
-l <- replicate(5, sample(15), simplify = FALSE)
+v <- 1:5
 ```
 
 ### Index selection
 
 ```r
-l[1]
-l[1:3]     # index range
-l[c(1, 3)] # selected indices
+v[1]
+v[1:3]     # index range
+v[c(1, 3)] # selected indices
 ```
 
 ### Index exclusion
 
 ```r
-l[-1]
-l[-c(1, 3)]
+v[-1]
+v[-c(1, 3)]
 ```
 
 ## Subset by name
@@ -717,23 +721,27 @@ names(l) <- letters[1:5]
 ### Character selection
 
 ```r
-l["a"]
-l[names(l) %in% c("a", "c")]
+v["a"]
+v[names(l) %in% c("a", "c")]
 ```
 
 ### Character exclusion
 
 ```r
-l[! names(l) %in% c("a", "c")]
+v[! names(l) %in% c("a", "c")]
 ```
 
-### Extracting list elements
+## (Optional) Extracting list elements
 
 Single brackets get you subsets of the same type (`list -> list`,
 `vector -> vector`, etc.). Double brackets extract the underlying vector
 from a list or data frame.
 
 ```r
+# Create a new list and give it names
+l <- replicate(5, sample(15), simplify = FALSE)
+names(l) <- letters[1:5]
+
 # You can extract one element
 l[[1]]
 l[["a"]]
@@ -748,7 +756,6 @@ l[[names(l) %in% c("a", "c")]]
 1.  Explicitly set each item to TRUE or FALSE
 
     ```r
-    v <- 1:5
     v[c(FALSE, TRUE, TRUE, FALSE, FALSE)]
     ```
 
@@ -779,7 +786,7 @@ m[2:4, 1:3]
 m[c(1, 3, 5), c(2, 4)]
 ```
 
-## Subset by factor
+## (Optional) Subset by factor
 
 ```r
 # First three items
@@ -795,6 +802,8 @@ gapminder$country[gapminder$country %in% north_america]
 Data frames have characteristics of both lists and matrices.
 
 ```r
+gapminder <- read.csv("data/gapminder_data.csv", stringsAsFactors = TRUE)
+
 # Get first three rows
 gapminder[1:3,]
 
@@ -1018,6 +1027,7 @@ f_to_kelvin(212)
 
     ```r
     f_to_celcius <- function(temp) {
+      ## Check inputs
       stopifnot(is.numeric(temp), temp > -460)
       celcius <- (temp - 32) * (5/9)
       return(celcius)
@@ -1060,8 +1070,7 @@ f_to_kelvin(212)
     ```
 
 2.  Mutating \`df\` inside the function doesn\'t affect the global
-    \`gapminder\` data frame. What happens in the function stays in the
-    function; this is called scope.
+    \`gapminder\` data frame (because of pass-by-value and scope).
 
 ## Challenge 6
 
@@ -1111,7 +1120,7 @@ dir(path = "data", pattern = "north_america_[1-9]*.csv")
     ```r
     length(df_list)
     names(df_list)
-    df_list[["north_america_1.csv"]]
+    df_list[["north_america_1952.csv"]]
     ```
 
 ## Read files using apply
@@ -1129,7 +1138,7 @@ dir(path = "data", pattern = "north_america_[1-9]*.csv")
 
     ```r
     ## You can still access by index position
-    df_list[[1]]
+    df_list[[2]]
 
     names(df_list)
     names(df_list) <- file_names
@@ -1146,6 +1155,8 @@ df_list <- file.path("data", file_names) |>
     lapply(read.csv)
 ```
 
+## (Optional) Review using \`apply\` with matrices
+
 # Data frame manipulation with dplyr
 
 1.  Explain Tidyverse briefly: <https://www.tidyverse.org/packages/>
@@ -1153,8 +1164,8 @@ df_list <- file.path("data", file_names) |>
 
 # Splitting and combining data frames with plyr
 
-Briefly describe split-apply-combine aggregate files to a single
-dataframe
+1.  Briefly describe split-apply-combine
+2.  Aggregate files to a single dataframe
 
 # Data frame manipulation with tidyr
 
@@ -1172,9 +1183,9 @@ dataframe
 
 # Credits
 
--   R for Reproducible Scientific Analysis:
+1.  R for Reproducible Scientific Analysis:
     <https://swcarpentry.github.io/r-novice-gapminder/>
--   Andrea Sánchez-Tapia\'s workshop:
+2.  Andrea Sánchez-Tapia\'s workshop:
     <https://github.com/AndreaSanchezTapia/UCMerced_R>
 
 # References
