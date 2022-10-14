@@ -20,3 +20,6 @@ tmp.md
 # Data folders except gapminder data
 data/*
 !data/gapminder*
+
+# Archives
+*.zip

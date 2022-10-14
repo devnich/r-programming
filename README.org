@@ -8,7 +8,8 @@
 #+BEGIN_SRC bash
 #+END_SRC
 
-* Introduction to R and RStudio
+* *WEEK 1: Fundamentals*
+* Introduction to RStudio
 ** Orientation
 #+CAPTION: Building programs that support your research workflow.
 #+NAME: Data science workflow
@@ -17,14 +18,22 @@
 2. R contains multitudes; this can be good and bad
 
 ** RStudio configuration
-1. Don't save or restore .RData (General > Basic)
-2. Use native pipe operator (Code > Editing)
-3. Ctrl+Enter executes current line (Code > Editing)
-4. Rainbow parentheses (Code > Display)
-5. Adjust font and syntax colors (Appearance)
-6. Move stuff around (Pane Layout)
+*** Configuration menu
+1. PC/Linux: Tools > Global Options
+2. MacOS: RStudio > Preferences /or/ Tools > Global Options
 
-** Workstation configuration
+*** Helpful configuration settings
+1. General > Basic
+   - Don't save or restore .RData
+2. Code > Editing
+   - Use native pipe operator
+   - Ctrl+Enter executes single line (or Multi-line R statement)
+3. Code > Display
+   - Rainbow parentheses
+4. Appearance: Adjust font and syntax colors
+5. Pane Layout: Move IDE panes
+
+** (Optional) Workstation configuration
 By default, your view of your file system will be opaque. We want to make it transparent (e.g. you may have a local Desktop and a cloud Desktop folder).
 
 *** Mac OS Finder > Preferences
@@ -51,20 +60,43 @@ Your local Desktop folder is in your Home directory or Computer directory.
 2. View
    1. File name extensions
 
-** Coding in RStudio
-1. Use both R scripts and R interactive console [REPL]
+** Workflow in RStudio
+1. Set working directory
+2. Test code snippets in the R console [REPL]
    #+BEGIN_SRC R
    print("hello")
    #+END_SRC
 
-2. Test snippets in REPL
-3. Run, Run Lines, and Run Current Line in script
-4. Set working directory
+3. Create an .R script in the working directory
+   #+BEGIN_SRC R
+   print("hello")
+   #+END_SRC
 
-** Introduction to R
-*** Using R as a calculator
-Begin with REPL, then move to script with comments
+4. *Run* the script
+   1. Keyboard shortcut
+      - Windows/Linux: ~Control-Enter~
+      - MacOS: ~Command-Enter~
+   2. Run button
+   3. Highlight and run lines
 
+5. *Source* the script to reduce console clutter and make contents available to other scripts
+   - https://stackoverflow.com/a/24418219
+   - https://support.rstudio.com/hc/en-us/articles/200484448-Editing-and-Executing-Code
+
+6. *Break* execution if console hangs
+   1. Windows: ~ESC~
+   2. MacOS/Linux: ~Control-c~
+
+7. *Clear* console
+   1. RStudio: ~C-l~
+   2. Emacs: ~C-c M-o~ / ~M-x comint-clear-buffer~
+
+8. *Comment/Uncomment* code
+   - MacOS: ~Command-/~
+
+* Introduction to R
+A whirlwind tour of R fundamentals
+** Mathematical expressions
 #+BEGIN_SRC R
 1 + 100
 (3 + 5) * 2  # operator precedence
@@ -73,7 +105,7 @@ Begin with REPL, then move to script with comments
 2 * 10^(-4)  # 2e-04 explicated
 #+END_SRC
 
-*** Mathematical functions
+** Built-in functions
 1. Some functions need inputs ("arguments")
    #+BEGIN_SRC R
    getwd()      # no argument required
@@ -92,7 +124,7 @@ Begin with REPL, then move to script with comments
    exp(0.5)    # e^(1/2)
    #+END_SRC
 
-*** Comparing things
+** Comparing things
 1. Basic comparisons
    #+BEGIN_SRC R
    1 == 1
@@ -101,19 +133,19 @@ Begin with REPL, then move to script with comments
    1 <= 1
    #+END_SRC
 
-2. Floating point numbers are tricky because of your computer's limits
+3. Use ~all.equal()~ for floating point numbers
    #+BEGIN_SRC R
-   all.equal(3.0, 3.0)         # TRUE
-   all.equal(2.9999999, 3.0)   # 7 places: Gives difference
-   all.equal(2.99999999, 3.0)  # 8 places: TRUE
-   2.99999999 == 3.0           # 8 places: FALSE
+   all.equal(3.0, 3.0)        # TRUE
+   all.equal(2.99, 3.0)       # 7 places: Gives difference
+   all.equal(2.99999999, 3.0) # 8 places: TRUE
+   2.99999999 == 3.0          # 8 places: FALSE
    #+END_SRC
 
-*** Variables and assignment
+** Variables and assignment
 1. R uses the assignment arrow (~Alt-Enter~ by default in RStudio; ~C-c C-=~ in ESS)
    #+BEGIN_SRC R
    # Assign a value to the variable name
-   x <- 1/40
+   x <- 0.025
    #+END_SRC
 
 2. You can inspect a variable's value in the Environment tab or by evaluating it in the console
@@ -137,8 +169,8 @@ Begin with REPL, then move to script with comments
    javaStyleVariable <- 12
    #+END_SRC
 
-*** Vectorization
-Vectorize all the things! This makes idiomatic R very different from most programming languages.
+** Vectorization
+Vectorize all the things! This makes idiomatic R very different from most programming languages, which use iteration ("for" loops) by default.
 #+BEGIN_SRC R
 # Create a sequence 1 - 5
 1:5
@@ -147,10 +179,11 @@ Vectorize all the things! This makes idiomatic R very different from most progra
 2^(1:5)
 
 # Assign the resulting vector to a variable
-v <- 2^(1:5)
+v <- 1:5
+2^v
 #+END_SRC
 
-*** Managing your  environment
+** Managing your  environment
 #+BEGIN_SRC R
 ls()             # List the objects in the environment
 ls               # Echo the contents of ls(), i.e. the code
@@ -160,7 +193,12 @@ rm(list = ls())  # Remove all objects in environment
 
 Note that parameter passing (~=~) is not the same as assignment (~<-~) in R!
 
-*** R Packages
+** Built-in data sets
+#+BEGIN_SRC R
+data()
+#+END_SRC
+
+** R Packages
 "Package" and "library" are roughly interchangeable.
 
 1. Install additional packages
@@ -174,7 +212,7 @@ Note that parameter passing (~=~) is not the same as assignment (~<-~) in R!
    library("tidyverse")
    #+END_SRC
 
-*** Challenges 1 and 2
+** Challenges 1 and 2
 See /scripts/curriculum.Rmd
 
 * Project management with RStudio
@@ -195,7 +233,8 @@ project_name
 
 ** Create projects with Rstudio
 1. File > New Project
-2. RStudio understands .Rproj files and will reopen everything for you
+2. Create in existing Folder
+3. If you close RStudio and double-click Rproj, RStudio will open to the project location and set the working directory.
 
 * Seeking help
 ** Basic help syntax
@@ -230,8 +269,17 @@ vignette("dplyr")
 3. Browse by topic: https://cran.r-project.org/web/views/
 
 * Data structures
-** Data types
-There are 5 basic (vector) data types.
+** R stores "atomic" data as vectors
+There are no scalars in R; everything is a vector, even if it's a vector of length 1.
+#+BEGIN_SRC R
+v <- 1:5
+
+length(v)
+length(3.14)
+#+END_SRC
+
+** Every vector has a type
+There are 5 basic (vector) data types: double, integer, complex, logical and character.
 #+BEGIN_SRC R
 typeof(v)
 typeof(3.14)
@@ -242,35 +290,14 @@ typeof("banana")
 #+END_SRC
 
 ** Vectors and type coercion
-1. Note that there are no scalars in R; everything is a vector, even if it's a vector of length 1.
-   #+BEGIN_SRC R
-   length(v)
-   length(3.14)
-   #+END_SRC
-
-2. (Optional) New vectors are empty by default
-   #+BEGIN_SRC R
-   # Vectors are logical by default
-   vector1 <- vector(length = 3)
-   vector1
-
-   # You can specify other types
-   vector2 <- vector(mode="character", length = 3)
-   vector2
-   str(vector2)
-   #+END_SRC
-
-3. A vector must be all one type. If you mix types, R will perform type coercion.
+1. A vector must be all one type. If you mix types, R will perform type coercion.
    See coercion rules in scrips/curriculum.Rmd
    #+BEGIN_SRC R
-   coercion_vector1 <- c(2, 6, '3')
-   coercion_vector2 <- c(0, TRUE)
-
-   coercion_vector1
-   coercion_vector2
+   c(2, 6, '3')
+   c(0, TRUE)
    #+END_SRC
 
-4. You can change vector types
+2. You can change vector types
    #+BEGIN_SRC R
    # Create a character vector
    chr_vector <- c('0', '2', '4')
@@ -278,40 +305,62 @@ typeof("banana")
 
    # Use it to create a numeric vector
    num_vector <- as.numeric(chr_vector)
+
+   # Show the structure of the collection
    str(num_vector)
    #+END_SRC
 
-5. There are multiple ways to generate vectors
+3. There are multiple ways to generate vectors
    #+BEGIN_SRC R
    # Two options for generating sequences
-   series1 <- 1:10
-   series2 <- seq(10)
-
-   series1
-   series2
+   1:10
+   seq(10)
 
    # The seq() function is more flexible
-   series3 <- seq(1, 10, by=0.1)
-   series3
+   series <- seq(1, 10, by=0.1)
+   series
    #+END_SRC
 
-6. Manage your vectors
+4. Get information about a collection
    #+BEGIN_SRC R
    # Don't print everything to the screen
-   length(series3)
-   head(series3, n=2)
-   tail(series3, n=4)
+   length(series)
+   head(series)
+   tail(series, n=2)
    #+END_SRC
 
    #+BEGIN_SRC R
    # You can add informative labels to most things in R
-   name_example <- 5:8
-   names(name_example) <- c("a", "b", "c", "d")
-   name_example
-   str(name_example)
+   names(v) <- c("a", "b", "c", "d", "e")
+   v
+   str(v)
    #+END_SRC
 
-** Challenge 3
+5. Get an item by its position or label
+   #+BEGIN_SRC R
+   v[1]
+   v["a"]
+   #+END_SRC
+
+6. Set an item by its position or label
+   #+BEGIN_SRC R
+   v[1] = 4
+   v
+   #+END_SRC
+
+7. (Optional) New vectors are empty by default
+   #+BEGIN_SRC R
+   # Vectors are logical by default
+   vector1 <- vector(length = 3)
+   vector1
+
+   # You can specify the type of an empty vector
+   vector2 <- vector(mode="character", length = 3)
+   vector2
+   str(vector2)
+   #+END_SRC
+
+** *Challenge 1*: Generate and label a vector
 See /scripts/curriculum.Rmd
 
 ** Factors
@@ -327,8 +376,10 @@ See /scripts/curriculum.Rmd
 
 2. R assumes that the first factor represents the baseline level, so you may need to change your factor ordering so that it makes sense for your variables
    #+BEGIN_SRC R
-   trials <- c("case", "control", "control", "case")
-   trial_factors <- factor(trials, levels = c("control", "case"))
+   ## "control" should be the baseline, regardless of trial order
+   trials <- c("manipulation", "control", "control", "manipulation")
+
+   trial_factors <- factor(trials, levels = c("control", "manipulation"))
    str(trial_factors)
    #+END_SRC
 
@@ -337,24 +388,25 @@ See /scripts/curriculum.Rmd
    #+BEGIN_SRC R
    cats <- data.frame(coat = c("calico", "black", "tabby"),
                       weight = c(2.1, 5.0, 3.2),
-                      likes_string = c(1, 0, 1))
+                      chases_bugs = c(1, 0, 1))
 
    cats         # show contents of data frame
    str(cats)    # inspect structure of data frame
 
-   # Convert likes_string to logical vector
-   cats$likes_string <- as.logical(cats$likes_string)
+   # Convert chases_bugs to logical vector
+   cats$chases_bugs <- as.logical(cats$chases_bugs)
+   str(cats)
    #+END_SRC
 
 2. Write the data frame to a CSV and re-import it. You can use ~read.delim()~ for tab-delimited files, or ~read.table()~ for flexible, general-purpose input.
    #+BEGIN_SRC R
-   write.csv(x = cats, file = "data/feline_data.csv", row.names = FALSE)
-   cats <- read.csv(file = "data/feline_data.csv", stringsAsFactors = TRUE)
+   write.csv(x = cats, file = "../data/feline_data.csv", row.names = FALSE)
+   cats <- read.csv(file = "../data/feline_data.csv", stringsAsFactors = TRUE)
 
    str(cats) # the chr column is now a factor column
    #+END_SRC
 
-3. Access the vectors of the data frame
+3. Access the column (vectors) of the data frame
    #+BEGIN_SRC R
    cats$weight
    cats$coat
@@ -365,7 +417,7 @@ See /scripts/curriculum.Rmd
    typeof(cats$weight)
    #+END_SRC
 
-5. Use data frame vectors can be inputs like any other vector
+5. Use data frame vectors in operations
    #+BEGIN_SRC R
    cats$weight + 2
    paste("My cat is", cats$coat)
@@ -378,10 +430,11 @@ See /scripts/curriculum.Rmd
    #+END_SRC
 
 6. Data frames have column names
+   ~names()~ gets or sets a name
    #+BEGIN_SRC R
    names(cats)
    names(cats)[2] <- "weight_kg"
-   names
+   cats
    #+END_SRC
 
 ** Lists
@@ -395,6 +448,7 @@ See /scripts/curriculum.Rmd
    list1[[3]]
    list1[[4]]
    #+END_SRC
+   If you use a single bracket ~[]~, you get back a shorter section of the list, which is also a list. Use double brackets ~[[]]~ to drill down to the actual value.
 
 2. This includes complex data structures
    #+BEGIN_SRC R
@@ -405,8 +459,6 @@ See /scripts/curriculum.Rmd
 
    # Double brackets retrieve the value, i.e. the contents of the list item
    list2[[2]]
-
-
    #+END_SRC
 
 3. Data frames are lists of vectors and factors
@@ -415,22 +467,26 @@ See /scripts/curriculum.Rmd
    #+END_SRC
 
 4. Some operations return lists, others return vectors (basically, are you getting the column with its label, or are you drilling down to the data?)
-   #+BEGIN_SRC R
-   # List slices
-   cats[1]      # list slice by index
-   cats["coat"] # list slice by name
-   cats[1, ]    # get data frame row by row number
+   1. Get list slices
+      #+BEGIN_SRC R
+      # List slices
+      cats[1]      # list slice by index
+      cats["coat"] # list slice by name
+      cats[1, ]    # get data frame row by row number
+      #+END_SRC
 
-   # List contents (in this case, vectors)
-   cats[[1]]      # content by index
-   cats[["coat"]] # content by name
-   cats$coat      # content by name; shorthand for `cats[["coat"]]`
-   cats[, 1]      # content by index, across all rows
-   cats[1, 1]     # content by index, single row
-   #+END_SRC
+   2. Get list contents (in this case, vectors)
+      #+BEGIN_SRC R
+      # List contents (in this case, vectors)
+      cats[[1]]      # content by index
+      cats[["coat"]] # content by name
+      cats$coat      # content by name; shorthand for `cats[["coat"]]`
+      cats[, 1]      # content by index, across all rows
+      cats[1, 1]     # content by index, single row
+      #+END_SRC
 
-   1. You can inspect all of these with ~typeof()~
-   2. Note that you can address data frames by row and columns
+   3. You can inspect all of these with ~typeof()~
+   4. Note that you can address data frames by row and columns
 
 ** Matrices
 1. A matrix is 2-dimensional vector
@@ -452,65 +508,63 @@ See /scripts/curriculum.Rmd
    length(mat2)
    #+END_SRC
 
-** Challenge 4
+** *(Optional) Challenge 2*: Creating matrices
 See /scripts/curriculum.Rmd
 
 * Exploring data frames
-#+BEGIN_SRC R
-#+END_SRC
-1. Adding columns
-   #+BEGIN_SRC R
-   age <- c(2, 3, 5)
-   cbind(cats, age)
-   cats                     # cats is unchanged
-   cats <- cbind(cats, age) # overwrite old cats
-   #+END_SRC
+** Adding columns
+#+begin_src R
+age <- c(2, 3, 5)
+cbind(cats, age)
+cats                     # cats is unchanged
+cats <- cbind(cats, age) # overwrite old cats
+#+end_src
 
-   #+BEGIN_SRC R
-   # Data frames enforce consistency
-   age <- c(2, 5)
-   cats <- cbind(cats, age)
-   #+END_SRC
+#+begin_src R
+# Data frames enforce consistency
+age <- c(2, 5)
+cats <- cbind(cats, age)
+#+end_src
 
-2. Appending rows (remember, rows are lists!)
-   #+BEGIN_SRC R
-   newRow <- list("tortoiseshell", 3.3, TRUE, 9)
-   cats <- rbind(cats, newRow)
+** Appending rows (remember, rows are lists!)
+#+begin_src R
+newRow <- list("tortoiseshell", 3.3, TRUE, 9)
+cats <- rbind(cats, newRow)
 
-   # Legal values added, illegal values are NA
-   cats
+# Legal values added, illegal values are NA
+cats
 
-   # Update the factor set
-   levels(cats$coat) <- c(levels(cats$coat), "tortoiseshell")
-   cats <- rbind(cats, list("tortoiseshell", 3.3, TRUE, 9))
-   #+END_SRC
+# Update the factor set
+levels(cats$coat) <- c(levels(cats$coat), "tortoiseshell")
+cats <- rbind(cats, list("tortoiseshell", 3.3, TRUE, 9))
+#+end_src
 
-3. Removing missing data
-   ~cats~ is now polluted with missing data
-   #+BEGIN_SRC R
-   na.omit(cats)
-   cats
-   cats <- na.omit(cats)
-   #+END_SRC
+** Removing missing data
+~cats~ is now polluted with missing data
+#+begin_src R
+na.omit(cats)
+cats
+cats <- na.omit(cats)
+#+end_src
 
-4. Working with realistic data
-   #+BEGIN_SRC R
-   gapminder <- read.csv("data/gapminder_data.csv", stringsAsFactors = TRUE)
+** Working with realistic data
+#+begin_src R
+gapminder <- read.csv("data/gapminder_data.csv", stringsAsFactors = TRUE)
 
-   # Get an overview of the data frame
-   str(gapminder)
-   dim(gapminder)
+# Get an overview of the data frame
+str(gapminder)
+dim(gapminder)
 
-   # It's a list
-   length(gapminder)
-   colnames(gapminder)
+# It's a list
+length(gapminder)
+colnames(gapminder)
 
-   # Look at the data
-   summary(gapminder$gdpPercap)  # summary varies by data type
-   head(gapminder)
-   #+END_SRC
+# Look at the data
+summary(gapminder$gdpPercap)  # summary varies by data type
+head(gapminder)
+#+end_src
 
-** Challenge 5
+** *Challenge 3*: Gapminder data frame
 See /scripts/curriculum.Rmd
 
 * Subsetting data
@@ -519,18 +573,18 @@ See /scripts/curriculum.Rmd
 v <- 1:5
 #+END_SRC
 
-*** Index selection
-#+BEGIN_SRC R
-v[1]
-v[1:3]     # index range
-v[c(1, 3)] # selected indices
-#+END_SRC
+1. Index selection
+   #+BEGIN_SRC R
+   v[1value]
+   v[1:3]     # index range
+   v[c(1, 3)] # selected indices
+   #+END_SRC
 
-*** Index exclusion
-#+BEGIN_SRC R
-v[-1]
-v[-c(1, 3)]
-#+END_SRC
+2. Index exclusion
+   #+BEGIN_SRC R
+   v[-1]
+   v[-c(1, 3)]
+   #+END_SRC
 
 ** Subset by name
 #+BEGIN_SRC R
@@ -538,16 +592,16 @@ letters[1:5]
 names(v) <- letters[1:5]
 #+END_SRC
 
-*** Character selection
-#+BEGIN_SRC R
-v["a"]
-v[names(v) %in% c("a", "c")]
-#+END_SRC
+1. Character selection
+   #+BEGIN_SRC R
+   v["a"]
+   v[names(v) %in% c("a", "c")]
+   #+END_SRC
 
-*** Character exclusion
-#+BEGIN_SRC R
-v[! names(v) %in% c("a", "c")]
-#+END_SRC
+2. Character exclusion
+   #+BEGIN_SRC R
+   v[! names(v) %in% c("a", "c")]
+   #+END_SRC
 
 ** (Optional) Extracting list elements
 Single brackets get you subsets of the same type (~list -> list~, ~vector -> vector~, etc.). Double brackets extract the underlying vector from a list or data frame.
@@ -566,7 +620,7 @@ l[[names(l) %in% c("a", "c")]]
 #+END_SRC
 
 ** Subsetting by logical operations
-1. Explicitly set each item to TRUE or FALSE
+1. Explicitly mask each item using TRUE or FALSE
    #+BEGIN_SRC R
    v[c(FALSE, TRUE, TRUE, FALSE, FALSE)]
    #+END_SRC
@@ -586,7 +640,7 @@ l[[names(l) %in% c("a", "c")]]
    v[v < 3 | v > 4]
    #+END_SRC
 
-** Subsetting matrices
+** (Optional) Subsetting matrices
 #+BEGIN_SRC R
 m <- matrix(1:25, nrow = 5, byrow = TRUE)
 
@@ -608,7 +662,7 @@ gapminder$country[gapminder$country %in% north_america]
 ** Subsetting Data Frames
 Data frames have characteristics of both lists and matrices.
 #+BEGIN_SRC R
-gapminder <- read.csv("data/gapminder_data.csv", stringsAsFactors = TRUE)
+gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
 
 # Get first three rows
 gapminder[1:3,]
@@ -625,68 +679,12 @@ gapminder[gapminder$country == "Mexico",]
 north_america <- c("Canada", "Mexico", "United States")
 gapminder[gapminder$country %in% north_america,]
 gapminder[gapminder$country %in% north_america & gapminder$year > 1999,]
+gapminder[gapminder$country %in% north_america & gapminder$year > 1999, c("country", "pop")]
 #+END_SRC
 
-* Vectorization
-** Vector operations are element-wise by default
-#+begin_src R
-x <- 1:4
-y <- 6:9
-x + y
-log(x)
+** *Challenge 4*: Extract data by region
 
-# A more realistic example
-gapminder$pop_millions <- gapminder$pop / 1e6
-head(gapminder)
-#+end_src
-
-** Vectors of unequal length are recycled
-#+begin_src R
-z <- 1:2
-x + z
-#+end_src
-
-** Logical comparisons
-#+begin_src R
-x > 2
-a <- (x > 2) # you can assign the output to a variable
-
-# Evaluate a boolean vector
-any(a)
-all(a)
-#+end_src
-
-** Matrix operations are also element-wise by default
-#+begin_src R
-m <- matrix(1:12, nrow=3, ncol=4)
-
-# Multiply each item by -1
-m * -1
-#+end_src
-
-** Linear algebra uses matrix multiplication
-#+begin_src R
-# Multiply two vectors
-1:4 %*% 1:4
-
-# Matrix-wise multiplication
-m2 <- matrix(1, nrow = 4, ncol = 1)
-m2
-m %*% m2
-
-# Most functions operate on the whole vector or matrix
-mean(m)
-sum(m)
-#+end_src
-
-** ~apply~ lets you apply an arbitrary function to an abitrary subset of a matrix. This is an example of a higher-order function (map, apply, filter, reduce, fold, etc.)
-#+begin_src R
-apply(m, 1, mean)
-apply(m, 2, mean)
-apply(m, 1, sum)
-apply(m, 2, sum)
-#+end_src
-
+* *WEEK 2: Building Programs in R*
 * Control flow
 ** Conditionals
 1. Look at Conditional template in curriculum.Rmd
@@ -756,6 +754,71 @@ Subsetting is frequently an alternative to if-else statements in R
    #+END_SRC
 
 4. This is where we skip the example where we append things to the end of a data frame. For loops are slow, vectorize operations are fast (and idiomatic). Use for loops where they're the appropriate tool (e.g., loading files, cycling through whole data sets, etc). We will see more of this in the section on reading and writing data.
+
+* Vectorization
+** Vector operations are element-wise by default
+#+begin_src R
+x <- 1:4
+y <- 6:9
+x + y
+log(x)
+
+# A more realistic example
+gapminder$pop_millions <- gapminder$pop / 1e6
+head(gapminder)
+#+end_src
+
+** Vectors of unequal length are recycled
+#+begin_src R
+z <- 1:2
+x + z
+#+end_src
+
+** Logical comparisons
+#+begin_src R
+x > 2
+a <- (x > 2) # you can assign the output to a variable
+
+# Evaluate a boolean vector
+any(a)
+all(a)
+#+end_src
+
+** Matrix operations are also element-wise by default
+#+begin_src R
+m <- matrix(1:12, nrow=3, ncol=4)
+
+# Multiply each item by -1
+m * -1
+#+end_src
+
+** Linear algebra uses matrix multiplication
+#+begin_src R
+# Multiply two vectors
+1:4 %*% 1:4
+
+# Matrix-wise multiplication
+m2 <- matrix(1, nrow = 4, ncol = 1)
+m2
+m %*% m2
+
+# Most functions operate on the whole vector or matrix
+mean(m)
+sum(m)
+#+end_src
+
+* COMMENT Higher-order functions
+1. ~apply()~ apply function over margins of array
+2. ~lapply()~ apply function over list, returning list
+3. ~sapply()~ apply function polymorphically over list, returning vector, matrix, or array
+
+4. ~apply~ lets you apply an arbitrary function to an abitrary subset of a matrix. This is an example of a higher-order function (map, apply, filter, reduce, fold, etc.) that can (and should) replace loops for most purposes
+   #+begin_src R
+   apply(m, 1, mean)
+   apply(m, 2, mean)
+   apply(m, 1, sum)
+   apply(m, 2, sum)
+   #+end_src
 
 * Functions explained
 Functions let you encapsulate and re-use chunks of code. This has several benefits:
@@ -897,14 +960,63 @@ dir(path = "data", pattern = "north_america_[1-9]*.csv")
    df_list[["north_america_1952.csv"]]
    #+END_SRC
 
-** Read files using apply with pipes
+** (Optional) Review using `apply` with matrices
+
+** Extracting nested data
+1. Read a file JSON into a nested list
+   #+BEGIN_SRC R
+   ## Read JSON file into nested list
+   library("jsonlite")
+   books <- fromJSON("../data/books.json")
+
+   ## View list structure
+   str(books)
+   #+END_SRC
+
+2. Extract all of the authors with ~lapply()~
+   #+BEGIN_SRC R
+   authors <- lapply(books, function(x) x$author)
+
+   ## Returns list
+   str(authors)
+   #+END_SRC
+
+3. Extract all of the authors with ~sapply()~
+   #+BEGIN_SRC R
+   authors <- sapply(books, function(x) x$author)
+
+   # Returns vector
+   str(authors)
+   #+END_SRC
+
+4. Extract all of the authors with ~purrr:::map_chr()~
+    #+BEGIN_SRC R
+    ## View the relevant map function
+    library("purrr")
+    help(map_chr)
+
+    ## Returns vector
+    authors <- map_chr(books, ~.x$author)
+    #+END_SRC
+
+5. The ~~.x~ operation in Purrr creates an anonymous function that applies to all the elements in the collection (in general, the Tidyverse uses ~.~ as a shorthand for "for each element")
+   1. Best overview in ~as_mapper()~ documentation: https://purrr.tidyverse.org/reference/as_mapper.html
+   2. https://stackoverflow.com/a/53160041
+   3. https://stackoverflow.com/a/62488532
+   4. https://stackoverflow.com/a/44834671
+
+6. Additonal references
+   1. https://purrr.tidyverse.org/reference/map.html
+   2. https://jtr13.github.io/spring19/ss5593&fq2150.html
+
+* *WEEK 3: Tidyverse*
+* Pipes
+** e.g. Read files using apply with pipes
 Pipes allow you to use an alternative formatting for collections of functions that can be easier to read.
 #+BEGIN_SRC R
 df_list <- file.path("data", file_names) |>
     lapply(read.csv)
 #+END_SRC
-
-** (Optional) Review using `apply` with matrices
 
 * Data frame manipulation with dplyr
 1. Explain Tidyverse briefly: https://www.tidyverse.org/packages/
@@ -915,54 +1027,43 @@ df_list <- file.path("data", file_names) |>
 2. Aggregate files to a single dataframe
 
 * Data frame manipulation with tidyr
-
-* Creating publication-quality graphics with ggplot2
-
 * Producing reports with knitr
-
+* Functional programming with purrr
+* (Optional) Metaprogramming with rlang
 * Writing good software
-
-* IDE Reference
-1. Clear console
-   1. RStudio: ~C-l~
-   2. Emacs: ~C-c M-o~ / ~M-x comint-clear-buffer~
-
+* COMMENT Creating publication-quality graphics with ggplot2
+* *Endnotes*
 * Credits
-1. R for Reproducible Scientific Analysis: https://swcarpentry.github.io/r-novice-gapminder/
-2. Andrea Sánchez-Tapia's workshop: https://github.com/AndreaSanchezTapia/UCMerced_R
+- R for Reproducible Scientific Analysis: https://swcarpentry.github.io/r-novice-gapminder/
+- Andrea Sánchez-Tapia's workshop: https://github.com/AndreaSanchezTapia/UCMerced_R
+- Instructor notes for "R for Reproducible Scientific Analysis": https://swcarpentry.github.io/r-novice-gapminder/guide/
 
 * References
-1. RStudio shortcuts and tips: https://appsilon.com/rstudio-shortcuts-and-tips/
-2. CRAN task views: https://cran.r-project.org/web/views/
-3. Why ~typeof()~ and ~class()~ give different outputs: https://stackoverflow.com/a/8857411
-4. How to get function code from the different object systems: https://stackoverflow.com/questions/19226816/how-can-i-view-the-source-code-for-a-function
-5. Various approaches to contrast coding: https://stats.oarc.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/
+- R Project documentation: https://cran.r-project.org/manuals.html
+- CRAN task views: https://cran.r-project.org/web/views/
+- R Cookbook: http://www.cookbook-r.com
+- RStudio cheat sheets: https://www.rstudio.com/resources/cheatsheets/
+- RStudio keyboard shortcuts: https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts
+- RStudio shortcuts and tips: https://appsilon.com/rstudio-shortcuts-and-tips/
+- Why ~typeof()~ and ~class()~ give different outputs: https://stackoverflow.com/a/8857411
+- How to get function code from the different object systems: https://stackoverflow.com/questions/19226816/how-can-i-view-the-source-code-for-a-function
+- Various approaches to contrast coding: https://stats.oarc.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/
 
-   If you tell R that a factor is ordered, it defaults to Orthogonal polynomial contrasts. This means that it assumes you want it to check for linear, cubic, and quadratic trends. If you tell R that a factor is NOT ordered, it defaults to treatment contrasts: it compares all levels to a reference level. This probably doesn't make sense for lots of psych data. So if I say income is ordered, it calculates linear, quadratic etc. trends for income, which is not only not what I want, but is inappropriate unless your groups are evenly spaced. Treatment means it calculates whether each level is significantly different from a reference level (i.e. the highest income group).
+  If you tell R that a factor is ordered, it defaults to Orthogonal polynomial contrasts. This means that it assumes you want it to check for linear, cubic, and quadratic trends. If you tell R that a factor is NOT ordered, it defaults to treatment contrasts: it compares all levels to a reference level. This probably doesn't make sense for lots of psych data. So if I say income is ordered, it calculates linear, quadratic etc. trends for income, which is not only not what I want, but is inappropriate unless your groups are evenly spaced. Treatment means it calculates whether each level is significantly different from a reference level (i.e. the highest income group).
 
-   So if you want first-year stats output in a design with more than 2 levels in the factor, put this at the top of the R code:
-   #+BEGIN_SRC R
-   options(contrasts = c("contr.sum","contr.poly"))
-   #+END_SRC
+  So if you want first-year stats output in a design with more than 2 levels in the factor, put this at the top of the R code:
+  #+BEGIN_SRC R
+  options(contrasts = c("contr.sum","contr.poly"))
+  #+END_SRC
 
-   ~contr.sum~ is R for deviation contrasts, which you may recall as contrasts like -1, 0, 1.
-
-6. Instructor notes for "R for Reproducible Scientific Analysis"
-   https://swcarpentry.github.io/r-novice-gapminder/guide/
+  ~contr.sum~ is R for deviation contrasts, which you may recall as contrasts like -1, 0, 1.
 
 * Data Sources
-** Additional data files
 1. Gapminder data:
    https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_data.csv
    https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_wide.csv
 
 * COMMENT How to export this document to other formats
-** Export to Markdown using Emacs Org mode
-Do this if you want a table of contents on Github.
-#+BEGIN_EXAMPLE
-M-x org-md-export-to-markdown
-#+END_EXAMPLE
-
 ** Export to Markdown using Pandoc
 Do this if you want code syntax highlighting and a table of contents on Github.
 *** Generate generic Markdown file
@@ -984,4 +1085,9 @@ pandoc -f markdown --toc --toc-depth=2 -s tmp.md -o README.md
 M-x qrr ` {.r org-language="R"}` `r`
 M-x qrr ` {.r}` `r`
 M-x qrr ` {.bash}` `bash`
+#+END_EXAMPLE
+** Export to Markdown using Emacs Org mode
+Do this if you want a table of contents on Github.
+#+BEGIN_EXAMPLE
+M-x org-md-export-to-markdown
 #+END_EXAMPLE

@@ -3,25 +3,6 @@ title: "Code Challenges"
 description: Additional materials for R Fundamentals
 ---
 
-## Introduction to R and RStudio
-
-### Challenge 1
-
-What is the variable after each statement in the following program?
-
-```{r challenge_1}
-
-mass <- 47.5
-age <- 122
-mass <- mass * 2.3
-age <- age - 20
-```
-
-### Challenge 2
-
-Which is larger, mass or age?
-
-
 ## Project Management
 
 ```{verbatim project_tree}
@@ -48,14 +29,14 @@ logical -> integer -> numeric -> complex -> character
 
 ```
 
-### Challenge 3
+### Challenge 1
 
 1. Make a vector with numbers 1 - 26
 2. Multiply the vector by 2
 3. Name the vector elements A - Z (Hint: there is a built-in vector called `LETTERS`)
 4. Print the last five items
 
-### Challenge 4
+### Challenge 2
 
 You want to produce the following matrix:
 
@@ -79,13 +60,17 @@ matrix(c(4, 1, 9, 5, 10, 7), ncol = 2, byrow = TRUE)
 
 ## Exploring Data Frames
 
-### Challenge 5
+### Challenge 3
 
 Create a new data frame from `gapminder` that includes the following columns:
 
 1. country
 2. year
 3. gdpPercap
+
+### Challenge 4
+
+Create a new data frame that contains all of the 21st century data from European countries.
 
 ## Control Flow
 
