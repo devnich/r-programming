@@ -18,8 +18,8 @@ tmp.md
 .Rproj.user/
 
 # Data folders except gapminder data
-data/*
-!data/gapminder*
+data/*.csv
+!data/gapminder*.csv
 
 # Archives
 *.zip

@@ -94,10 +94,24 @@ if (condition is true) {
 
 ```{r for_loops}
 
-for (iterator in set of values) {
-  do a thing
+for (item in collection) {
+  do something
 }
 ```
+
+### Challenge 5
+
+We would like to sum the following sequence:
+
+```{r}
+x = (1^2) + (2^2) + (3^2) + ... + (n^2)
+```
+
+This would be tedious to type out, and impossible for high values of n.
+
+1. Use vectorisation to compute x when n=100.
+2. What is the sum when n=10,000?
+
 
 ## Functions
 
@@ -106,13 +120,14 @@ for (iterator in set of values) {
 ```{r functions}
 
 my_function <- function(parameters) {
-  # perform action
-  # return value
+    do something
+    
+    return value
 }
 ```
 
 ### Challenge 6
 
 1. Calculate the total GDP for each North American country in 1952 and 1957
-2. Save your results as a CSV file called `north_america_1.csv` in a subfolder called `data`.
+2. Save your results as a CSV file called `north_america_1.csv` in a subfolder called `processed`.
 

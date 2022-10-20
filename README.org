@@ -83,15 +83,20 @@ Your local Desktop folder is in your Home directory or Computer directory.
    - https://stackoverflow.com/a/24418219
    - https://support.rstudio.com/hc/en-us/articles/200484448-Editing-and-Executing-Code
 
-6. *Break* execution if console hangs
+6. *Insert* assignment arrow ~<-~
+   - MacOS: ~Option -~
+   - Windows/Linux: ~Alt -~
+   - Good customization: ~Control -~
+
+7. *Break* execution if console hangs
    1. Windows: ~ESC~
    2. MacOS/Linux: ~Control-c~
 
-7. *Clear* console
+8. *Clear* console
    1. RStudio: ~C-l~
    2. Emacs: ~C-c M-o~ / ~M-x comint-clear-buffer~
 
-8. *Comment/Uncomment* code
+9. *Comment/Uncomment* code
    - MacOS: ~Command-/~
 
 * Introduction to R
@@ -142,7 +147,7 @@ A whirlwind tour of R fundamentals
    #+END_SRC
 
 ** Variables and assignment
-1. R uses the assignment arrow (~Alt-Enter~ by default in RStudio; ~C-c C-=~ in ESS)
+1. R uses the assignment arrow (~C-c C-=~ in ESS)
    #+BEGIN_SRC R
    # Assign a value to the variable name
    x <- 0.025
@@ -211,9 +216,6 @@ data()
    #+BEGIN_SRC R
    library("tidyverse")
    #+END_SRC
-
-** Challenges 1 and 2
-See /scripts/curriculum.Rmd
 
 * Project management with RStudio
 ** General file management
@@ -291,7 +293,7 @@ typeof("banana")
 
 ** Vectors and type coercion
 1. A vector must be all one type. If you mix types, R will perform type coercion.
-   See coercion rules in scrips/curriculum.Rmd
+   See coercion rules in scripts/curriculum.Rmd
    #+BEGIN_SRC R
    c(2, 6, '3')
    c(0, TRUE)
@@ -363,7 +365,26 @@ typeof("banana")
 ** *Challenge 1*: Generate and label a vector
 See /scripts/curriculum.Rmd
 
-** Factors
+** Matrices
+1. A matrix is 2-dimensional vector
+   #+BEGIN_SRC R
+   # Create a matrix of zeros
+   mat1 <- matrix(0, ncol = 6, nrow = 3)
+
+   # Inspect it
+   class(mat1)
+   typeof(mat1)
+   str(mat1)
+   #+END_SRC
+
+2. Some operations act as if the matrix is a 1-D wrapped vector
+   #+BEGIN_SRC R
+   mat2 <- matrix(1:25, nrow = 5, byrow = TRUE)
+   str(mat2)
+   length(mat2)
+   #+END_SRC
+
+** (Optional) Factors
 1. Factors represent unique levels (e.g., experimental conditions)
    #+BEGIN_SRC R
    coats <- c("tabby", "tortoise", "tortoise", "black", "tabby")
@@ -386,9 +407,11 @@ See /scripts/curriculum.Rmd
 ** Data Frames are central to working with tabular data
 1. Create a data frame
    #+BEGIN_SRC R
-   cats <- data.frame(coat = c("calico", "black", "tabby"),
-                      weight = c(2.1, 5.0, 3.2),
-                      chases_bugs = c(1, 0, 1))
+   coat = c("calico", "black", "tabby")
+   weight = c(2.1, 5.0, 3.2)
+   chases_bugs = c(1, 0, 1)
+
+   cats <- data.frame(coat, weight, chases_bugs)
 
    cats         # show contents of data frame
    str(cats)    # inspect structure of data frame
@@ -450,7 +473,7 @@ See /scripts/curriculum.Rmd
    #+END_SRC
    If you use a single bracket ~[]~, you get back a shorter section of the list, which is also a list. Use double brackets ~[[]]~ to drill down to the actual value.
 
-2. This includes complex data structures
+2. (Optional) This includes complex data structures
    #+BEGIN_SRC R
    list2 <- list(title = "Numbers", numbers = 1:10, data = TRUE)
 
@@ -488,26 +511,6 @@ See /scripts/curriculum.Rmd
    3. You can inspect all of these with ~typeof()~
    4. Note that you can address data frames by row and columns
 
-** Matrices
-1. A matrix is 2-dimensional vector
-   #+BEGIN_SRC R
-   # Create a matrix of zeros
-   mat1 <- matrix(0, ncol = 6, nrow = 3)
-   mat2 <- matrix(1:25, nrow = 5, byrow = TRUE)
-
-   # Inspect it
-   class(mat1)
-   typeof(mat1)
-   str(mat1)
-   #+END_SRC
-
-2. Some operations act as if the matrix is a 1-D wrapped vector
-   #+BEGIN_SRC R
-   mat2 <- matrix(1:25, nrow = 5, byrow = TRUE)
-   str(mat2)
-   length(mat2)
-   #+END_SRC
-
 ** *(Optional) Challenge 2*: Creating matrices
 See /scripts/curriculum.Rmd
 
@@ -534,7 +537,7 @@ cats <- rbind(cats, newRow)
 # Legal values added, illegal values are NA
 cats
 
-# Update the factor set
+# Update the factor set so that "tortoiseshell" is a legal value
 levels(cats$coat) <- c(levels(cats$coat), "tortoiseshell")
 cats <- rbind(cats, list("tortoiseshell", 3.3, TRUE, 9))
 #+end_src
@@ -564,7 +567,7 @@ summary(gapminder$gdpPercap)  # summary varies by data type
 head(gapminder)
 #+end_src
 
-** *Challenge 3*: Gapminder data frame
+** *Challenge 3*: New gapminder data frame
 See /scripts/curriculum.Rmd
 
 * Subsetting data
@@ -575,12 +578,12 @@ v <- 1:5
 
 1. Index selection
    #+BEGIN_SRC R
-   v[1value]
+   v[1]
    v[1:3]     # index range
    v[c(1, 3)] # selected indices
    #+END_SRC
 
-2. Index exclusion
+2. (Optional) Index exclusion
    #+BEGIN_SRC R
    v[-1]
    v[-c(1, 3)]
@@ -598,10 +601,19 @@ names(v) <- letters[1:5]
    v[names(v) %in% c("a", "c")]
    #+END_SRC
 
-2. Character exclusion
+2. (Optional) Character exclusion
    #+BEGIN_SRC R
    v[! names(v) %in% c("a", "c")]
    #+END_SRC
+
+** Subsetting matrices
+#+BEGIN_SRC R
+m <- matrix(1:28, nrow = 7, byrow = TRUE)
+
+# Matrices are just 2D vectors
+m[2:4, 1:3]
+m[c(1, 3, 5), c(2, 4)]
+#+END_SRC
 
 ** (Optional) Extracting list elements
 Single brackets get you subsets of the same type (~list -> list~, ~vector -> vector~, etc.). Double brackets extract the underlying vector from a list or data frame.
@@ -620,18 +632,17 @@ l[[names(l) %in% c("a", "c")]]
 #+END_SRC
 
 ** Subsetting by logical operations
-1. Explicitly mask each item using TRUE or FALSE
+1. Explicitly mask each item using TRUE or FALSE. This returns the reduced vector.
    #+BEGIN_SRC R
    v[c(FALSE, TRUE, TRUE, FALSE, FALSE)]
    #+END_SRC
 
 2. Evaluate the truth of each item, then produce the TRUE ones
    #+BEGIN_SRC R
-   # Explicit version
-   truth_vec <- v > 4
-   v[truth_vec]
+   # Use a criterion to generate a truth vector
+   v > 4
 
-   # Implicit version
+   # Filter the original vector by the criterion
    v[v > 4]
    #+END_SRC
 
@@ -639,15 +650,6 @@ l[[names(l) %in% c("a", "c")]]
    #+BEGIN_SRC R
    v[v < 3 | v > 4]
    #+END_SRC
-
-** (Optional) Subsetting matrices
-#+BEGIN_SRC R
-m <- matrix(1:25, nrow = 5, byrow = TRUE)
-
-# Matrices are just 2D vectors
-m[2:4, 1:3]
-m[c(1, 3, 5), c(2, 4)]
-#+END_SRC
 
 ** (Optional) Subset by factor
 #+BEGIN_SRC R
@@ -661,28 +663,37 @@ gapminder$country[gapminder$country %in% north_america]
 
 ** Subsetting Data Frames
 Data frames have characteristics of both lists and matrices.
-#+BEGIN_SRC R
-gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
 
-# Get first three rows
-gapminder[1:3,]
+1. Get first three rows
+   #+BEGIN_SRC R
+   gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
 
-# Rows and columns
-gapminder[1:6, 1:3]
-gapminder[1:6, c("country", "pop")]
+   # Get first three rows
+   gapminder[1:3,]
+   #+END_SRC
 
-# Data frames are lists, so one index gets you the *columns*
-gapminder[1:3]
+2. Rows and columns
+   #+BEGIN_SRC R
+   gapminder[1:6, 1:3]
+   gapminder[1:6, c("country", "pop")]
+   #+END_SRC
 
-# Filter by contents
-gapminder[gapminder$country == "Mexico",]
-north_america <- c("Canada", "Mexico", "United States")
-gapminder[gapminder$country %in% north_america,]
-gapminder[gapminder$country %in% north_america & gapminder$year > 1999,]
-gapminder[gapminder$country %in% north_america & gapminder$year > 1999, c("country", "pop")]
-#+END_SRC
+3. Data frames are lists, so one index gets you the *columns*
+   #+BEGIN_SRC R
+   gapminder[1:3]
+   #+END_SRC
+
+4. Filter by contents
+   #+BEGIN_SRC R
+   gapminder[gapminder$country == "Mexico",]
+   north_america <- c("Canada", "Mexico", "United States")
+   gapminder[gapminder$country %in% north_america,]
+   gapminder[gapminder$country %in% north_america & gapminder$year > 1999,]
+   gapminder[gapminder$country %in% north_america & gapminder$year > 1999, c("country", "pop")]
+   #+END_SRC
 
 ** *Challenge 4*: Extract data by region
+See /scripts/curriculum.Rmd
 
 * *WEEK 2: Building Programs in R*
 * Control flow
@@ -695,8 +706,6 @@ gapminder[gapminder$country %in% north_america & gapminder$year > 1999, c("count
    if (x >= 10) {
      print("x is greater than or equal to 10")
    }
-
-   x
    #+END_SRC
 
 3. Else
@@ -747,7 +756,7 @@ Subsetting is frequently an alternative to if-else statements in R
 3. Nested For loop
    #+BEGIN_SRC R
    for (i in 1:5) {
-     for (j in c('a', 'b', 'c', 'd', 'e')) {
+     for (j in letters[1:4]) {
        print(paste(i,j))
      }
    }
@@ -807,18 +816,88 @@ mean(m)
 sum(m)
 #+end_src
 
-* COMMENT Higher-order functions
-1. ~apply()~ apply function over margins of array
-2. ~lapply()~ apply function over list, returning list
-3. ~sapply()~ apply function polymorphically over list, returning vector, matrix, or array
+** *Challenge 5*: Sum of squares
+See /scripts/curriculum.Rmd
 
-4. ~apply~ lets you apply an arbitrary function to an abitrary subset of a matrix. This is an example of a higher-order function (map, apply, filter, reduce, fold, etc.) that can (and should) replace loops for most purposes
-   #+begin_src R
-   apply(m, 1, mean)
-   apply(m, 2, mean)
-   apply(m, 1, sum)
-   apply(m, 2, sum)
-   #+end_src
+* Higher-order functions
+ ~apply()~ lets you apply an arbitrary function over a collection. This is an example of a higher-order function (map, apply, filter, reduce, fold, etc.) that can (and should) replace loops for most purposes. They are an intermediate case between vectorized operations (very fast) and for loops (very slow). Use them when you need to build a new collection and vectorized operations aren't available.
+
+** ~apply()~: Apply a function over the margins of an array
+#+begin_src R
+m <- matrix(1:28, nrow = 7, byrow = TRUE)
+
+apply(m, 1, mean)
+apply(m, 2, mean)
+apply(m, 1, sum)
+apply(m, 2, sum)
+#+end_src
+
+** ~lapply()~: Apply a function over a list, returning a list
+#+begin_src R
+lst <- list(title = "Numbers", numbers = 1:10, data = TRUE)
+
+## length() returns the length of the whole list
+length(lst)
+
+## Use lapply() to get the length of the individual elements
+lapply(lst, length)
+#+end_src
+
+** ~sapply()~: Apply a function polymorphically over list, returning vector, matrix, or array as appropriate
+#+begin_src R
+## Simplify and return a vector by default
+sapply(lst, length)
+
+## Optionally, eturn the original data type
+sapply(lst, length, simplify = FALSE)
+#+end_src
+
+** Use ~apply~ and friends to extract nested data from a list
+1. Read a file JSON into a nested list
+   #+BEGIN_SRC R
+   ## Read JSON file into nested list
+   library("jsonlite")
+   books <- fromJSON("../data/books.json")
+
+   ## View list structure
+   str(books)
+   #+END_SRC
+
+2. Extract all of the authors with ~lapply()~. This requires us to define an /anonymous function/.
+   #+BEGIN_SRC R
+   authors <- lapply(books, function(x) x$author)
+
+   ## Returns list
+   str(authors)
+   #+END_SRC
+
+3. Extract all of the authors with ~sapply()~
+   #+BEGIN_SRC R
+   authors <- sapply(books, function(x) x$author)
+
+   # Returns vector
+   str(authors)
+   #+END_SRC
+
+** (Optional) Use ~purrr:::map_chr()~ to extract nested data from a list
+#+BEGIN_SRC R
+## View the relevant map function
+library("purrr")
+help(map_chr)
+
+## Returns vector
+authors <- map_chr(books, ~.x$author)
+#+END_SRC
+
+1. The ~~.x~ operation in Purrr creates an anonymous function that applies to all the elements in the collection (in general, the Tidyverse uses ~.~ as a shorthand for "for each element")
+   1. Best overview in ~as_mapper()~ documentation: https://purrr.tidyverse.org/reference/as_mapper.html
+   2. https://stackoverflow.com/a/53160041
+   3. https://stackoverflow.com/a/62488532
+   4. https://stackoverflow.com/a/44834671
+
+2. Additional references
+   1. https://purrr.tidyverse.org/reference/map.html
+   2. https://jtr13.github.io/spring19/ss5593&fq2150.html
 
 * Functions explained
 Functions let you encapsulate and re-use chunks of code. This has several benefits:
@@ -840,6 +919,7 @@ Functions let you encapsulate and re-use chunks of code. This has several benefi
 3. Call the function
    #+BEGIN_SRC R
    f_to_celcius(32)
+
    boiling <- f_to_celcius(212)
    #+END_SRC
 
@@ -853,6 +933,18 @@ f_to_kelvin <- function(temp) {
 }
 
 f_to_kelvin(212)
+#+END_SRC
+
+** Most functions work with collections
+#+BEGIN_SRC R
+## Create a vector of temperatures
+temps <- seq(from = 1, to = 101, by = 10)
+
+# Vectorized calculation (fast)
+f_to_kelvin(temps)
+
+# Apply
+sapply(temps, f_to_kelvin)
 #+END_SRC
 
 ** Defensive programming
@@ -869,19 +961,25 @@ f_to_kelvin(212)
    f_to_celcius(-470)
    #+END_SRC
 
-2. (Optional) Fail with a custom error if criterion not met
+2. Fail with a custom error if criterion not met
    #+BEGIN_SRC R
    f_to_celcius <- function(temp) {
      if(!is.numeric(temp)) {
        stop("temp must be a numeric vector")
      }
      celcius <- (temp - 32) * (5/9)
+
      return(celcius)
    }
    #+END_SRC
 
 ** Working with rich data
-1. Write a function to perform a total GDP calculation on a filtered subset of your data.
+1. Calculate the total GDP for each entry in the data set
+   #+BEGIN_SRC R
+   gdp <- gapminder$pop * gapminder$gdpPercap
+   #+END_SRC
+
+2. Write a function to perform a total GDP calculation on a filtered subset of your data.
    #+BEGIN_SRC R
    calcGDP <- function(df, year=NULL, country=NULL) {
      if(!is.null(year)) {
@@ -897,9 +995,9 @@ f_to_kelvin(212)
    }
    #+END_SRC
 
-2. Mutating `df` inside the function doesn't affect the global `gapminder` data frame (because of pass-by-value and scope).
+3. Mutating ~df~ inside the function doesn't affect the global ~gapminder~ data frame (because of pass-by-value and scope).
 
-** Challenge 6
+** *Challenge 6*: Testing and debugging your function
 See data/curriculum.Rmd
 
 * Reading and writing data
@@ -909,7 +1007,7 @@ for (year in unique(gapminder$year)) {
   df <- calcGDP(gapminder, year = year, country = north_america)
 
   ## Generate a file name
-  fname <- paste("data/north_america_", as.character(year), ".csv", sep = "")
+  fname <- paste("processed/north_america_", as.character(year), ".csv", sep = "")
 
   ## Write the file
   write.csv(x = df, file = fname, row.names = FALSE)
@@ -919,7 +1017,7 @@ for (year in unique(gapminder$year)) {
 ** How to find files
 #+BEGIN_SRC R
 ## Get matching files from the `data` subdirectory
-dir(path = "data", pattern = "north_america_[1-9]*.csv")
+dir(path = "processed", pattern = "north_america_[1-9]*.csv")
 #+END_SRC
 
 ** Read files using a for loop
@@ -929,10 +1027,10 @@ dir(path = "data", pattern = "north_america_[1-9]*.csv")
    df_list <- list()
 
    ## Get the locations of the matching files
-   file_names <- dir(path = "data", pattern = "north_america_[1-9]*.csv")
+   file_names <- dir(path = "processed", pattern = "north_america_[1-9]*.csv")
 
    for (f in file_names){
-     df_list[[f]] <- read.csv(file = file.path("data", f))
+     df_list[[f]] <- read.csv(file = file.path("processed", f))
    }
    #+END_SRC
 
@@ -946,8 +1044,7 @@ dir(path = "data", pattern = "north_america_[1-9]*.csv")
 ** Read files using apply
 1. Instead of a for loop that handles each file individually, use a single vectorized function.
    #+BEGIN_SRC R
-   file_names <- dir(path = "data", pattern = "north_america_[1-9]*.csv")
-   df_list <- lapply(file.path("data", file_names), read.csv)
+   df_list <- lapply(file.path("processed", file_names), read.csv)
    #+END_SRC
 
 2. This doesn't add names by default, so you will have to add them manually
@@ -960,58 +1057,11 @@ dir(path = "data", pattern = "north_america_[1-9]*.csv")
    df_list[["north_america_1952.csv"]]
    #+END_SRC
 
-** (Optional) Review using `apply` with matrices
-
-** Extracting nested data
-1. Read a file JSON into a nested list
-   #+BEGIN_SRC R
-   ## Read JSON file into nested list
-   library("jsonlite")
-   books <- fromJSON("../data/books.json")
-
-   ## View list structure
-   str(books)
-   #+END_SRC
-
-2. Extract all of the authors with ~lapply()~
-   #+BEGIN_SRC R
-   authors <- lapply(books, function(x) x$author)
-
-   ## Returns list
-   str(authors)
-   #+END_SRC
-
-3. Extract all of the authors with ~sapply()~
-   #+BEGIN_SRC R
-   authors <- sapply(books, function(x) x$author)
-
-   # Returns vector
-   str(authors)
-   #+END_SRC
-
-4. Extract all of the authors with ~purrr:::map_chr()~
-    #+BEGIN_SRC R
-    ## View the relevant map function
-    library("purrr")
-    help(map_chr)
-
-    ## Returns vector
-    authors <- map_chr(books, ~.x$author)
-    #+END_SRC
-
-5. The ~~.x~ operation in Purrr creates an anonymous function that applies to all the elements in the collection (in general, the Tidyverse uses ~.~ as a shorthand for "for each element")
-   1. Best overview in ~as_mapper()~ documentation: https://purrr.tidyverse.org/reference/as_mapper.html
-   2. https://stackoverflow.com/a/53160041
-   3. https://stackoverflow.com/a/62488532
-   4. https://stackoverflow.com/a/44834671
-
-6. Additonal references
-   1. https://purrr.tidyverse.org/reference/map.html
-   2. https://jtr13.github.io/spring19/ss5593&fq2150.html
-
 * *WEEK 3: Tidyverse*
 * Pipes
-** e.g. Read files using apply with pipes
+** COMMENT Read files using apply with pipes
+NB: this is an impoverished example
+
 Pipes allow you to use an alternative formatting for collections of functions that can be easier to read.
 #+BEGIN_SRC R
 df_list <- file.path("data", file_names) |>
@@ -1043,6 +1093,7 @@ df_list <- file.path("data", file_names) |>
 - CRAN task views: https://cran.r-project.org/web/views/
 - R Cookbook: http://www.cookbook-r.com
 - RStudio cheat sheets: https://www.rstudio.com/resources/cheatsheets/
+- Matrix algebra operations in R: https://www.statmethods.net/advstats/matrix.html
 - RStudio keyboard shortcuts: https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts
 - RStudio shortcuts and tips: https://appsilon.com/rstudio-shortcuts-and-tips/
 - Why ~typeof()~ and ~class()~ give different outputs: https://stackoverflow.com/a/8857411
@@ -1086,6 +1137,7 @@ M-x qrr ` {.r org-language="R"}` `r`
 M-x qrr ` {.r}` `r`
 M-x qrr ` {.bash}` `bash`
 #+END_EXAMPLE
+
 ** Export to Markdown using Emacs Org mode
 Do this if you want a table of contents on Github.
 #+BEGIN_EXAMPLE
