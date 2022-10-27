@@ -84,9 +84,8 @@
         appropriate](#sapply-apply-a-function-polymorphically-over-list-returning-vector-matrix-or-array-as-appropriate)
     -   [Use `apply` and friends to extract nested data from a
         list](#use-apply-and-friends-to-extract-nested-data-from-a-list)
-    -   [(Optional) Use `purrr:::map_chr()` to extract nested data from
-        a
-        list](#optional-use-purrrmap_chr-to-extract-nested-data-from-a-list)
+    -   [(Optional) Convert nested list into data
+        frame](#optional-convert-nested-list-into-data-frame)
 -   [Functions explained](#functions-explained)
     -   [Defining a function](#defining-a-function)
     -   [Combining functions](#combining-functions)
@@ -97,25 +96,48 @@
     -   [**Challenge 6**: Testing and debugging your
         function](#challenge-6-testing-and-debugging-your-function)
 -   [Reading and writing data](#reading-and-writing-data)
-    -   [Create sample data sets and write them to the \`data\`
-        directory](#create-sample-data-sets-and-write-them-to-the-data-directory)
+    -   [Create sample data sets and write them to the \`processed\`
+        directory](#create-sample-data-sets-and-write-them-to-the-processed-directory)
     -   [How to find files](#how-to-find-files)
     -   [Read files using a for loop](#read-files-using-a-for-loop)
     -   [Read files using apply](#read-files-using-apply)
+    -   [Concatenate list of data frames into a single data
+        frame](#concatenate-list-of-data-frames-into-a-single-data-frame)
 -   [**WEEK 3: Tidyverse**](#week-3-tidyverse)
--   [Pipes](#pipes)
 -   [Data frame manipulation with
     dplyr](#data-frame-manipulation-with-dplyr)
--   [Splitting and combining data frames with
-    plyr](#splitting-and-combining-data-frames-with-plyr)
+    -   [Orientation](#orientation-1)
+    -   [Select data frame variables](#select-data-frame-variables)
+    -   [Filter data frames by content](#filter-data-frames-by-content)
+    -   [**(Optional) Challenge 7**:
+        Filter](#optional-challenge-7-filter)
+    -   [Group rows](#group-rows)
+    -   [Summarize grouped data](#summarize-grouped-data)
+    -   [Use group counts](#use-group-counts)
+    -   [Mutate the data to create new
+        variables](#mutate-the-data-to-create-new-variables)
+    -   [Add conditional filtering to a pipeline with
+        `ifelse`](#add-conditional-filtering-to-a-pipeline-with-ifelse)
+    -   [**Challenge 8**: Life expectancy in random
+        countries](#challenge-8-life-expectancy-in-random-countries)
 -   [Data frame manipulation with
     tidyr](#data-frame-manipulation-with-tidyr)
--   [Producing reports with knitr](#producing-reports-with-knitr)
--   [Functional programming with
-    purrr](#functional-programming-with-purrr)
--   [(Optional) Metaprogramming with
-    rlang](#optional-metaprogramming-with-rlang)
--   [Writing good software](#writing-good-software)
+    -   [Gapminder data](#gapminder-data)
+    -   [Wide to long with
+        `pivot_longer()`](#wide-to-long-with-pivot_longer)
+    -   [Long to intermediate with
+        `pivot_wider()`](#long-to-intermediate-with-pivot_wider)
+    -   [Long to wide with
+        `pivot_wider()`](#long-to-wide-with-pivot_wider)
+-   [Additional tidyverse libraries](#additional-tidyverse-libraries)
+    -   [Reading data with readr](#reading-data-with-readr)
+    -   [String processing with
+        stringr](#string-processing-with-stringr)
+    -   [Functional programming with
+        purrr](#functional-programming-with-purrr)
+-   [(Optional) Database interfaces](#optional-database-interfaces)
+    -   [Data frame joins with dplyr](#data-frame-joins-with-dplyr)
+    -   [Access databases using dplyr](#access-databases-using-dplyr)
 -   [**Endnotes**](#endnotes)
 -   [Credits](#credits)
 -   [References](#references)
@@ -194,13 +216,13 @@ directory.
 
 2.  Test code snippets in the R console \[REPL\]
 
-    ``` r
+    ```r
     print("hello")
     ```
 
 3.  Create an .R script in the working directory
 
-    ``` r
+    ```r
     print("hello")
     ```
 
@@ -244,7 +266,7 @@ A whirlwind tour of R fundamentals
 
 ## Mathematical expressions
 
-``` r
+```r
 1 + 100
 (3 + 5) * 2  # operator precedence
 5 * (3 ^ 2)  # powers
@@ -256,7 +278,7 @@ A whirlwind tour of R fundamentals
 
 1.  Some functions need inputs (\"arguments\")
 
-    ``` r
+    ```r
     getwd()      # no argument required
     sin(1)       # requires arg
     log(1)       # natural log
@@ -264,13 +286,13 @@ A whirlwind tour of R fundamentals
 
 2.  RStudio has auto-completion
 
-    ``` r
+    ```r
     log...
     ```
 
 3.  Use `help()` to find out more about a function
 
-    ``` r
+    ```r
     help(exp)
     exp(0.5)    # e^(1/2)
     ```
@@ -279,7 +301,7 @@ A whirlwind tour of R fundamentals
 
 1.  Basic comparisons
 
-    ``` r
+    ```r
     1 == 1
     1 != 2
     1 < 2
@@ -288,7 +310,7 @@ A whirlwind tour of R fundamentals
 
 2.  Use `all.equal()` for floating point numbers
 
-    ``` r
+    ```r
     all.equal(3.0, 3.0)        # TRUE
     all.equal(2.99, 3.0)       # 7 places: Gives difference
     all.equal(2.99999999, 3.0) # 8 places: TRUE
@@ -299,7 +321,7 @@ A whirlwind tour of R fundamentals
 
 1.  R uses the assignment arrow (`C-c C-=` in ESS)
 
-    ``` r
+    ```r
     # Assign a value to the variable name
     x <- 0.025
     ```
@@ -307,14 +329,14 @@ A whirlwind tour of R fundamentals
 2.  You can inspect a variable\'s value in the Environment tab or by
     evaluating it in the console
 
-    ``` r
+    ```r
     # Evaluate the variable and echo its value to the console
     x
     ```
 
 3.  Variables can be re-used and re-assigned
 
-    ``` r
+    ```r
     log(x)
     x <- 100
     x <- x + 1
@@ -323,7 +345,7 @@ A whirlwind tour of R fundamentals
 
 4.  Use a standard naming scheme for your variables
 
-    ``` r
+    ```r
     r.style.variable <- 10
     python_style_variable <- 11
     javaStyleVariable <- 12
@@ -335,7 +357,7 @@ Vectorize all the things! This makes idiomatic R very different from
 most programming languages, which use iteration (\"for\" loops) by
 default.
 
-``` r
+```r
 # Create a sequence 1 - 5
 1:5
 
@@ -349,7 +371,7 @@ v <- 1:5
 
 ## Managing your environment
 
-``` r
+```r
 ls()             # List the objects in the environment
 ls               # Echo the contents of ls(), i.e. the code
 rm(x)            # Remove the x object
@@ -361,7 +383,7 @@ in R!
 
 ## Built-in data sets
 
-``` r
+```r
 data()
 ```
 
@@ -371,14 +393,14 @@ data()
 
 1.  Install additional packages
 
-    ``` r
+    ```r
     install.packages("tidyverse")
     ## install.packages("rmarkdown")
     ```
 
 2.  Activate a package for use
 
-    ``` r
+    ```r
     library("tidyverse")
     ```
 
@@ -412,7 +434,7 @@ project_name
 
 ## Basic help syntax
 
-``` r
+```r
 help(write.csv)
 ?write.csv
 ```
@@ -427,13 +449,13 @@ help(write.csv)
 
 ## Special operators
 
-``` r
+```r
 help("<-")
 ```
 
 ## Library examples
 
-``` r
+```r
 vignette("dplyr")
 ```
 
@@ -443,7 +465,7 @@ vignette("dplyr")
 
 2.  Fuzzy search
 
-    ``` r
+    ```r
     ??set
     ```
 
@@ -456,7 +478,7 @@ vignette("dplyr")
 There are no scalars in R; everything is a vector, even if it\'s a
 vector of length 1.
 
-``` r
+```r
 v <- 1:5
 
 length(v)
@@ -468,7 +490,7 @@ length(3.14)
 There are 5 basic (vector) data types: double, integer, complex, logical
 and character.
 
-``` r
+```r
 typeof(v)
 typeof(3.14)
 typeof(1L)
@@ -482,14 +504,14 @@ typeof("banana")
 1.  A vector must be all one type. If you mix types, R will perform type
     coercion. See coercion rules in scripts/curriculum.Rmd
 
-    ``` r
+    ```r
     c(2, 6, '3')
     c(0, TRUE)
     ```
 
 2.  You can change vector types
 
-    ``` r
+    ```r
     # Create a character vector
     chr_vector <- c('0', '2', '4')
     str(chr_vector)
@@ -503,7 +525,7 @@ typeof("banana")
 
 3.  There are multiple ways to generate vectors
 
-    ``` r
+    ```r
     # Two options for generating sequences
     1:10
     seq(10)
@@ -515,14 +537,14 @@ typeof("banana")
 
 4.  Get information about a collection
 
-    ``` r
+    ```r
     # Don't print everything to the screen
     length(series)
     head(series)
     tail(series, n=2)
     ```
 
-    ``` r
+    ```r
     # You can add informative labels to most things in R
     names(v) <- c("a", "b", "c", "d", "e")
     v
@@ -531,21 +553,21 @@ typeof("banana")
 
 5.  Get an item by its position or label
 
-    ``` r
+    ```r
     v[1]
     v["a"]
     ```
 
 6.  Set an item by its position or label
 
-    ``` r
+    ```r
     v[1] = 4
     v
     ```
 
 7.  (Optional) New vectors are empty by default
 
-    ``` r
+    ```r
     # Vectors are logical by default
     vector1 <- vector(length = 3)
     vector1
@@ -564,7 +586,7 @@ See /scripts/curriculum.Rmd
 
 1.  A matrix is 2-dimensional vector
 
-    ``` r
+    ```r
     # Create a matrix of zeros
     mat1 <- matrix(0, ncol = 6, nrow = 3)
 
@@ -576,7 +598,7 @@ See /scripts/curriculum.Rmd
 
 2.  Some operations act as if the matrix is a 1-D wrapped vector
 
-    ``` r
+    ```r
     mat2 <- matrix(1:25, nrow = 5, byrow = TRUE)
     str(mat2)
     length(mat2)
@@ -586,7 +608,7 @@ See /scripts/curriculum.Rmd
 
 1.  Factors represent unique levels (e.g., experimental conditions)
 
-    ``` r
+    ```r
     coats <- c("tabby", "tortoise", "tortoise", "black", "tabby")
     str(coats)
 
@@ -599,7 +621,7 @@ See /scripts/curriculum.Rmd
     you may need to change your factor ordering so that it makes sense
     for your variables
 
-    ``` r
+    ```r
     ## "control" should be the baseline, regardless of trial order
     trials <- c("manipulation", "control", "control", "manipulation")
 
@@ -611,7 +633,7 @@ See /scripts/curriculum.Rmd
 
 1.  Create a data frame
 
-    ``` r
+    ```r
     coat = c("calico", "black", "tabby")
     weight = c(2.1, 5.0, 3.2)
     chases_bugs = c(1, 0, 1)
@@ -630,7 +652,7 @@ See /scripts/curriculum.Rmd
     `read.delim()` for tab-delimited files, or `read.table()` for
     flexible, general-purpose input.
 
-    ``` r
+    ```r
     write.csv(x = cats, file = "../data/feline_data.csv", row.names = FALSE)
     cats <- read.csv(file = "../data/feline_data.csv", stringsAsFactors = TRUE)
 
@@ -639,7 +661,7 @@ See /scripts/curriculum.Rmd
 
 3.  Access the column (vectors) of the data frame
 
-    ``` r
+    ```r
     cats$weight
     cats$coat
     ```
@@ -647,13 +669,13 @@ See /scripts/curriculum.Rmd
 4.  A vector can only hold one type. Therefore, in a data frame each
     data column (vector) has to be a single type.
 
-    ``` r
+    ```r
     typeof(cats$weight)
     ```
 
 5.  Use data frame vectors in operations
 
-    ``` r
+    ```r
     cats$weight + 2
     paste("My cat is", cats$coat)
 
@@ -666,7 +688,7 @@ See /scripts/curriculum.Rmd
 
 6.  Data frames have column names `names()` gets or sets a name
 
-    ``` r
+    ```r
     names(cats)
     names(cats)[2] <- "weight_kg"
     cats
@@ -676,7 +698,7 @@ See /scripts/curriculum.Rmd
 
 1.  Lists can contain anything
 
-    ``` r
+    ```r
     list1 <- list(1, "a", TRUE, 1+4i)
 
     # Inspect each element of the list
@@ -692,7 +714,7 @@ See /scripts/curriculum.Rmd
 
 2.  (Optional) This includes complex data structures
 
-    ``` r
+    ```r
     list2 <- list(title = "Numbers", numbers = 1:10, data = TRUE)
 
     # Single brackets retrieve a slice of the list, containing the name:value pair
@@ -704,7 +726,7 @@ See /scripts/curriculum.Rmd
 
 3.  Data frames are lists of vectors and factors
 
-    ``` r
+    ```r
     typeof(cats)
     ```
 
@@ -714,7 +736,7 @@ See /scripts/curriculum.Rmd
 
     1.  Get list slices
 
-        ``` r
+        ```r
         # List slices
         cats[1]      # list slice by index
         cats["coat"] # list slice by name
@@ -723,7 +745,7 @@ See /scripts/curriculum.Rmd
 
     2.  Get list contents (in this case, vectors)
 
-        ``` r
+        ```r
         # List contents (in this case, vectors)
         cats[[1]]      # content by index
         cats[["coat"]] # content by name
@@ -744,14 +766,14 @@ See /scripts/curriculum.Rmd
 
 ## Adding columns
 
-``` r
+```r
 age <- c(2, 3, 5)
 cbind(cats, age)
 cats                     # cats is unchanged
 cats <- cbind(cats, age) # overwrite old cats
 ```
 
-``` r
+```r
 # Data frames enforce consistency
 age <- c(2, 5)
 cats <- cbind(cats, age)
@@ -759,7 +781,7 @@ cats <- cbind(cats, age)
 
 ## Appending rows (remember, rows are lists!)
 
-``` r
+```r
 newRow <- list("tortoiseshell", 3.3, TRUE, 9)
 cats <- rbind(cats, newRow)
 
@@ -775,7 +797,7 @@ cats <- rbind(cats, list("tortoiseshell", 3.3, TRUE, 9))
 
 `cats` is now polluted with missing data
 
-``` r
+```r
 na.omit(cats)
 cats
 cats <- na.omit(cats)
@@ -783,8 +805,8 @@ cats <- na.omit(cats)
 
 ## Working with realistic data
 
-``` r
-gapminder <- read.csv("data/gapminder_data.csv", stringsAsFactors = TRUE)
+```r
+gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
 
 # Get an overview of the data frame
 str(gapminder)
@@ -807,13 +829,13 @@ See /scripts/curriculum.Rmd
 
 ## Subset by index
 
-``` r
+```r
 v <- 1:5
 ```
 
 1.  Index selection
 
-    ``` r
+    ```r
     v[1]
     v[1:3]     # index range
     v[c(1, 3)] # selected indices
@@ -821,34 +843,34 @@ v <- 1:5
 
 2.  (Optional) Index exclusion
 
-    ``` r
+    ```r
     v[-1]
     v[-c(1, 3)]
     ```
 
 ## Subset by name
 
-``` r
+```r
 letters[1:5]
 names(v) <- letters[1:5]
 ```
 
 1.  Character selection
 
-    ``` r
+    ```r
     v["a"]
     v[names(v) %in% c("a", "c")]
     ```
 
 2.  (Optional) Character exclusion
 
-    ``` r
+    ```r
     v[! names(v) %in% c("a", "c")]
     ```
 
 ## Subsetting matrices
 
-``` r
+```r
 m <- matrix(1:28, nrow = 7, byrow = TRUE)
 
 # Matrices are just 2D vectors
@@ -862,7 +884,7 @@ Single brackets get you subsets of the same type (`list -> list`,
 `vector -> vector`, etc.). Double brackets extract the underlying vector
 from a list or data frame.
 
-``` r
+```r
 # Create a new list and give it names
 l <- replicate(5, sample(15), simplify = FALSE)
 names(l) <- letters[1:5]
@@ -881,13 +903,13 @@ l[[names(l) %in% c("a", "c")]]
 1.  Explicitly mask each item using TRUE or FALSE. This returns the
     reduced vector.
 
-    ``` r
+    ```r
     v[c(FALSE, TRUE, TRUE, FALSE, FALSE)]
     ```
 
 2.  Evaluate the truth of each item, then produce the TRUE ones
 
-    ``` r
+    ```r
     # Use a criterion to generate a truth vector
     v > 4
 
@@ -897,13 +919,13 @@ l[[names(l) %in% c("a", "c")]]
 
 3.  Combining logical operations
 
-    ``` r
+    ```r
     v[v < 3 | v > 4]
     ```
 
 ## (Optional) Subset by factor
 
-``` r
+```r
 # First three items
 gapminder$country[1:3]
 
@@ -918,7 +940,7 @@ Data frames have characteristics of both lists and matrices.
 
 1.  Get first three rows
 
-    ``` r
+    ```r
     gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
 
     # Get first three rows
@@ -927,20 +949,20 @@ Data frames have characteristics of both lists and matrices.
 
 2.  Rows and columns
 
-    ``` r
+    ```r
     gapminder[1:6, 1:3]
     gapminder[1:6, c("country", "pop")]
     ```
 
 3.  Data frames are lists, so one index gets you the **columns**
 
-    ``` r
+    ```r
     gapminder[1:3]
     ```
 
 4.  Filter by contents
 
-    ``` r
+    ```r
     gapminder[gapminder$country == "Mexico",]
     north_america <- c("Canada", "Mexico", "United States")
     gapminder[gapminder$country %in% north_america,]
@@ -962,7 +984,7 @@ See /scripts/curriculum.Rmd
 
 2.  If
 
-    ``` r
+    ```r
     x <- 8
 
     if (x >= 10) {
@@ -972,7 +994,7 @@ See /scripts/curriculum.Rmd
 
 3.  Else
 
-    ``` r
+    ```r
     if (x >= 10) {
       print("x is greater than or equal to 10")
     } else {
@@ -982,7 +1004,7 @@ See /scripts/curriculum.Rmd
 
 4.  Else If
 
-    ``` r
+    ```r
     if (x >= 10) {
       print("x is greater than or equal to 10")
     } else if (x > 5) {
@@ -994,14 +1016,14 @@ See /scripts/curriculum.Rmd
 
 5.  Vectorize your tests
 
-    ``` r
+    ```r
     x <- 1:4
 
-    if any(x < 2) {
+    if (any(x < 2)) {
       print("Some x less than 2")
     }
 
-    if all(x < 2){
+    if (all(x < 2)){
       print("All x less than 2")
     }
     ```
@@ -1016,7 +1038,7 @@ Subsetting is frequently an alternative to if-else statements in R
 
 2.  Basic For loop
 
-    ``` r
+    ```r
     for (i in 1:10) {
       print(i)
     }
@@ -1024,7 +1046,7 @@ Subsetting is frequently an alternative to if-else statements in R
 
 3.  Nested For loop
 
-    ``` r
+    ```r
     for (i in 1:5) {
       for (j in letters[1:4]) {
         print(paste(i,j))
@@ -1042,7 +1064,7 @@ Subsetting is frequently an alternative to if-else statements in R
 
 ## Vector operations are element-wise by default
 
-``` r
+```r
 x <- 1:4
 y <- 6:9
 x + y
@@ -1055,25 +1077,45 @@ head(gapminder)
 
 ## Vectors of unequal length are recycled
 
-``` r
+```r
 z <- 1:2
 x + z
 ```
 
 ## Logical comparisons
 
-``` r
-x > 2
-a <- (x > 2) # you can assign the output to a variable
+1.  Do the elements match a criterion?
 
-# Evaluate a boolean vector
-any(a)
-all(a)
-```
+    ```r
+    x > 2
+    a <- (x > 2) # you can assign the output to a variable
+
+    # Evaluate a boolean vector
+    any(a)
+    all(a)
+    ```
+
+2.  Can you detect missing data?
+
+    ```r
+    nan_vec <- c(1, 3, NaN)
+
+    ## Which elements are NaN?
+    is.nan(nan_vec)
+
+    ## Which elements are not NaN?
+    !is.nan(nan_vec)
+
+    ## Are any elements NaN?
+    any(is.nan(nan_vec))
+
+    ## Are all elements NaN?
+    all(is.nan(nan_vec))
+    ```
 
 ## Matrix operations are also element-wise by default
 
-``` r
+```r
 m <- matrix(1:12, nrow=3, ncol=4)
 
 # Multiply each item by -1
@@ -1082,7 +1124,7 @@ m * -1
 
 ## Linear algebra uses matrix multiplication
 
-``` r
+```r
 # Multiply two vectors
 1:4 %*% 1:4
 
@@ -1111,7 +1153,7 @@ and vectorized operations aren\'t available.
 
 ## `apply()`: Apply a function over the margins of an array
 
-``` r
+```r
 m <- matrix(1:28, nrow = 7, byrow = TRUE)
 
 apply(m, 1, mean)
@@ -1122,7 +1164,7 @@ apply(m, 2, sum)
 
 ## `lapply()`: Apply a function over a list, returning a list
 
-``` r
+```r
 lst <- list(title = "Numbers", numbers = 1:10, data = TRUE)
 
 ## length() returns the length of the whole list
@@ -1134,7 +1176,7 @@ lapply(lst, length)
 
 ## `sapply()`: Apply a function polymorphically over list, returning vector, matrix, or array as appropriate
 
-``` r
+```r
 ## Simplify and return a vector by default
 sapply(lst, length)
 
@@ -1146,7 +1188,7 @@ sapply(lst, length, simplify = FALSE)
 
 1.  Read a file JSON into a nested list
 
-    ``` r
+    ```r
     ## Read JSON file into nested list
     library("jsonlite")
     books <- fromJSON("../data/books.json")
@@ -1158,7 +1200,11 @@ sapply(lst, length, simplify = FALSE)
 2.  Extract all of the authors with `lapply()`. This requires us to
     define an *anonymous function*.
 
-    ``` r
+    ```r
+    ## Extract a single author
+    books[["bk110"]]$author
+
+    ## Use lapply to extract all the authors
     authors <- lapply(books, function(x) x$author)
 
     ## Returns list
@@ -1167,35 +1213,34 @@ sapply(lst, length, simplify = FALSE)
 
 3.  Extract all of the authors with `sapply()`
 
-    ``` r
+    ```r
     authors <- sapply(books, function(x) x$author)
 
     # Returns vector
     str(authors)
     ```
 
-## (Optional) Use `purrr:::map_chr()` to extract nested data from a list
+## (Optional) Convert nested list into data frame
 
-``` r
-## View the relevant map function
-library("purrr")
-help(map_chr)
+1.  Method 1: Create a list of data frames, then bind them together into
+    a single data frame
 
-## Returns vector
-authors <- map_chr(books, ~.x$author)
-```
+    ```r
+    ## This approach omits the top-level book id
+    df <- do.call(rbind, lapply(books, data.frame))
+    ```
 
-1.  The \~\~.x\~ operation in Purrr creates an anonymous function that
-    applies to all the elements in the collection (in general, the
-    Tidyverse uses `.` as a shorthand for \"for each element\")
-    1.  Best overview in `as_mapper()` documentation:
-        <https://purrr.tidyverse.org/reference/as_mapper.html>
-    2.  <https://stackoverflow.com/a/53160041>
-    3.  <https://stackoverflow.com/a/62488532>
-    4.  <https://stackoverflow.com/a/44834671>
-2.  Additional references
-    1.  <https://purrr.tidyverse.org/reference/map.html>
-    2.  <https://jtr13.github.io/spring19/ss5593&fq2150.html>
+    -   `lapply()` applies a given function for each element in a list,
+        so there will be several function calls.
+    -   `do.call()` applies a given function to the list as a whole, so
+        there is only one function call.
+
+2.  Method 2: Use the `rbindlist()` function from data.table
+
+    ```r
+    ## This approach includes the top-level book id
+    df <- data.table::rbindlist(books, idcol = TRUE)
+    ```
 
 # Functions explained
 
@@ -1214,7 +1259,7 @@ several benefits:
 
 2.  Define a simple function
 
-    ``` r
+    ```r
     # Convert Fahrenheit to Celcius
     f_to_celcius <- function(temp) {
       celcius <- (temp - 32) * (5/9)
@@ -1224,7 +1269,7 @@ several benefits:
 
 3.  Call the function
 
-    ``` r
+    ```r
     f_to_celcius(32)
 
     boiling <- f_to_celcius(212)
@@ -1234,7 +1279,7 @@ several benefits:
 
 Define a second function and call the first function within the second.
 
-``` r
+```r
 f_to_kelvin <- function(temp) {
   celcius <- f_to_celcius(temp)
   kelvin <- celcius + 273.15
@@ -1246,7 +1291,7 @@ f_to_kelvin(212)
 
 ## Most functions work with collections
 
-``` r
+```r
 ## Create a vector of temperatures
 temps <- seq(from = 1, to = 101, by = 10)
 
@@ -1262,7 +1307,7 @@ sapply(temps, f_to_kelvin)
 1.  Check whether input meets criteria before proceeding (this is
     \`assert\` in other languages).
 
-    ``` r
+    ```r
     f_to_celcius <- function(temp) {
       ## Check inputs
       stopifnot(is.numeric(temp), temp > -460)
@@ -1276,7 +1321,7 @@ sapply(temps, f_to_kelvin)
 
 2.  Fail with a custom error if criterion not met
 
-    ``` r
+    ```r
     f_to_celcius <- function(temp) {
       if(!is.numeric(temp)) {
         stop("temp must be a numeric vector")
@@ -1289,16 +1334,24 @@ sapply(temps, f_to_kelvin)
 
 ## Working with rich data
 
+```r
+## Prerequisites
+gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
+north_america <- c("Canada", "Mexico", "United States")
+```
+
 1.  Calculate the total GDP for each entry in the data set
 
-    ``` r
+    ```r
+    gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
+
     gdp <- gapminder$pop * gapminder$gdpPercap
     ```
 
 2.  Write a function to perform a total GDP calculation on a filtered
     subset of your data.
 
-    ``` r
+    ```r
     calcGDP <- function(df, year=NULL, country=NULL) {
       if(!is.null(year)) {
         df <- df[df$year %in% year, ]
@@ -1308,7 +1361,7 @@ sapply(temps, f_to_kelvin)
       }
       gdp <- df$pop * df$gdpPercap
 
-      new_df <- cbind(df, totalGDP=gdp)
+      new_df <- cbind(df, gdp=gdp)
       return(new_df)
     }
     ```
@@ -1322,14 +1375,18 @@ See data/curriculum.Rmd
 
 # Reading and writing data
 
-## Create sample data sets and write them to the \`data\` directory
+## Create sample data sets and write them to the \`processed\` directory
 
-``` r
+```r
+if (!dir.exists("../processed")) {
+  dir.create("../processed")
+}
+
 for (year in unique(gapminder$year)) {
   df <- calcGDP(gapminder, year = year, country = north_america)
 
-  ## Generate a file name
-  fname <- paste("processed/north_america_", as.character(year), ".csv", sep = "")
+  ## Generate a file name. This will fail if "processed" doesn't exist
+  fname <- paste("../processed/north_america_", as.character(year), ".csv", sep = "")
 
   ## Write the file
   write.csv(x = df, file = fname, row.names = FALSE)
@@ -1338,32 +1395,33 @@ for (year in unique(gapminder$year)) {
 
 ## How to find files
 
-``` r
-## Get matching files from the `data` subdirectory
-dir(path = "processed", pattern = "north_america_[1-9]*.csv")
+```r
+## Get matching files from the `processed` subdirectory
+dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
 ```
 
 ## Read files using a for loop
 
 1.  Read each file into a data frame and add it to a list
 
-    ``` r
+    ```r
     ## Create an empty list
     df_list <- list()
 
     ## Get the locations of the matching files
-    file_names <- dir(path = "processed", pattern = "north_america_[1-9]*.csv")
+    file_names <- dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
 
     for (f in file_names){
-      df_list[[f]] <- read.csv(file = file.path("processed", f))
+      df_list[[f]] <- read.csv(file = file.path("../processed", f), stringsAsFactors = TRUE)
     }
     ```
 
 2.  Access the list items to view the individual data frames
 
-    ``` r
+    ```r
     length(df_list)
     names(df_list)
+    lapply(df_list, length)
     df_list[["north_america_1952.csv"]]
     ```
 
@@ -1372,45 +1430,456 @@ dir(path = "processed", pattern = "north_america_[1-9]*.csv")
 1.  Instead of a for loop that handles each file individually, use a
     single vectorized function.
 
-    ``` r
-    df_list <- lapply(file.path("processed", file_names), read.csv)
-    ```
+    ```r
+    df_list <- lapply(file.path("../processed", file_names), read.csv, stringsAsFactors = TRUE)
 
-2.  This doesn\'t add names by default, so you will have to add them
-    manually
+    ## The resulting list does not have names set by default
+    names(df_list)
 
-    ``` r
     ## You can still access by index position
     df_list[[2]]
+    ```
 
-    names(df_list)
+2.  (Optional) Automatically set names for the output list This example
+    sets each name to the complete path name (e.g.,
+    `"../processed/north_america_1952.csv"`).
+
+    ```r
+    df_list <- sapply(file.path("../processed", file_names), read.csv, simplify = FALSE, USE.NAMES = TRUE)
+    ```
+
+3.  (Optional) Add names manually
+
+    ```r
     names(df_list) <- file_names
     df_list[["north_america_1952.csv"]]
     ```
 
-# **WEEK 3: Tidyverse**
+## Concatenate list of data frames into a single data frame
 
-# Pipes
+1.  Method 1: Create a list of data frames, then bind them together into
+    a single data frame
+
+    ```r
+    df <- do.call(rbind, df_list)
+    ```
+
+    -   `lapply()` applies a given function for each element in a list,
+        so there will be several function calls.
+    -   `do.call()` applies a given function to the list as a whole, so
+        there is only one function call.
+
+2.  (Optional) Method 2: Use the `rbindlist()` function from data.table.
+    This *can* be faster for large data sets. It also give you the
+    option of preserving the list names (in this case, the source file
+    names) as a new column in the new data frame.
+
+    ```r
+    df_list <- sapply(file.path("../processed", file_names), read.csv, simplify = FALSE, USE.NAMES = TRUE)
+    df <- data.table::rbindlist(df_list, idcol = TRUE)
+    ```
+
+# **WEEK 3: Tidyverse**
 
 # Data frame manipulation with dplyr
 
+## Orientation
+
+```r
+library("dplyr")
+```
+
 1.  Explain Tidyverse briefly: <https://www.tidyverse.org/packages/>
-2.  Explain tibbles briefly
+2.  (Optional) Demo unix pipes with `history | grep`
+3.  Explain tibbles briefly
+4.  dplyr allows you to treat data frames like relational database
+    tables; i.e. as *sets*
 
-# Splitting and combining data frames with plyr
+## Select data frame variables
 
-1.  Briefly describe split-apply-combine
-2.  Aggregate files to a single dataframe
+1.  `select()` provides a mini-language for selecting data frame
+    variables
+
+    ```r
+    df <- select(gapminder, year, country, gdpPercap)
+    str(df)
+    ```
+
+2.  `select()` understands negation (and many other intuitive operators)
+
+    ```r
+    df2 <- select(gapminder, -continent)
+    str(df2)
+    ```
+
+3.  You can link multiple operations using pipes. This will be more
+    intuitive once we see this combined with `filter()`
+
+    ```r
+    df <- gapminder %>% select(year, country, gdpPercap)
+
+    ## You can use the native pipe. This has a few limitations:
+    ## df <- gapminder |> select(year, country, gdpPercap)
+    ```
+
+## Filter data frames by content
+
+1.  Filter by continent
+
+    ```r
+    df_europe <- gapminder %>%
+      filter(continent == "Europe") %>%
+      select(year, country, gdpPercap)
+
+    str(df_europe)
+    ```
+
+2.  Filter by continent and year
+
+    ```r
+    europe_2007 <- gapminder %>%
+      filter(continent == "Europe", year == 2007) %>%
+      select(country, lifeExp)
+
+    str(europe_2007)
+    ```
+
+## **(Optional) Challenge 7**: Filter
+
+See data/curriculum.Rmd
+
+## Group rows
+
+1.  Group data by a data frame variable
+
+    ```r
+    grouped_df <- gapminder %>% group_by(continent)
+
+    ## This produces a tibble
+    str(grouped_df)
+    ```
+
+2.  The grouped data frame contains metadata (i.e. bookkeeping) that
+    tracks the group membership of each row. You can inspect this
+    metadata:
+
+    ```r
+    grouped_df %>% tally ()
+    grouped_df %>% group_keys ()
+    grouped_df %>% group_vars ()
+
+    ## These produce a lot of output:
+    grouped_df %>% group_indices ()
+    grouped_df %>% group_rows ()
+    ```
+
+    -   More information about grouped data frames:
+        <https://dplyr.tidyverse.org/articles/grouping.html>
+
+## Summarize grouped data
+
+1.  Calculate mean gdp per capita by continent
+
+    ```r
+    grouped_df %>% summarise(mean_gdpPercap = mean(gdpPercap))
+    ```
+
+2.  (Optional) Using pipes allows you to do ad hoc reporting with
+    creating intermediate variables
+
+    ```r
+    gapminder %>%
+      group_by(continent) %>%
+      summarise(mean_gdpPercap = mean(gdpPercap))
+    ```
+
+3.  Group data by multiple variables
+
+    ```r
+    df <- gapminder %>%
+      group_by(continent, year) %>%
+      summarise(mean_gdpPercap = mean(gdpPercap))
+    ```
+
+4.  Create multiple data summaries
+
+    ```r
+    df <- gapminder %>%
+      group_by(continent, year) %>%
+      summarise(mean_gdp = mean(gdpPercap),
+                sd_gdp = sd(gdpPercap),
+                mean_pop = mean(pop),
+                sd_pop = sd(pop))
+    ```
+
+## Use group counts
+
+1.  `count()` lets you get an ad hoc count of any variable
+
+    ```r
+    gapminder %>%
+      filter(year == 2002) %>%
+      count(continent, sort = TRUE)
+    ```
+
+2.  `n()` gives the number of observations in a group
+
+    ```r
+    ## Get the standard error of life expectancy by continent
+    gapminder %>%
+      group_by(continent) %>%
+      summarise(se_le = sd(lifeExp)/sqrt(n()))
+    ```
+
+## Mutate the data to create new variables
+
+Mutate creates a new variable within your pipeline
+
+```r
+## Total GDP and population by continent and year
+df <- gapminder %>%
+  mutate(gdp_billion = gdpPercap * pop / 10^9) %>%
+  group_by(continent, year) %>%
+  summarise(mean_gdp = mean(gdp_billion),
+            sd_gdp = sd(gdp_billion),
+            mean_pop = mean(pop),
+            sd_pop = sd(pop))
+```
+
+## Add conditional filtering to a pipeline with `ifelse`
+
+1.  Perform previous calculation, but only in cases in which the life
+    expectancy is over 25
+
+    ```r
+    df <- gapminder %>%
+      mutate(gdp_billion = ifelse(lifeExp > 25, gdpPercap * pop / 10^9, NA)) %>%
+      group_by(continent, year) %>%
+      summarise(mean_gdp = mean(gdp_billion),
+                sd_gdp = sd(gdp_billion),
+                mean_pop = mean(pop),
+                sd_pop = sd(pop))
+    ```
+
+2.  Predict future GDP per capita for countries with higher life
+    expectancies
+
+    ```r
+    df <- gapminder %>%
+      mutate(gdp_expected = ifelse(lifeExp > 40, gdpPercap * 1.5, gdpPercap)) %>%
+      group_by(continent, year) %>%
+      summarize(mean_gdpPercap = mean(gdpPercap),
+                mean_gdpPercap_expected = mean(gdp_expected))
+    ```
+
+## **Challenge 8**: Life expectancy in random countries
+
+```r
+gapminder %>%
+  filter(year == 2002) %>%
+  group_by(continent) %>%
+  sample_n(2) %>%
+  summarize(mean_lifeExp = mean(lifeExp), country = country) %>%
+  arrange(desc(mean_lifeExp))
+```
 
 # Data frame manipulation with tidyr
 
-# Producing reports with knitr
+1.  Long format: All rows are unique observations (ideally)
+    1.  each column is a variable
+    2.  each row is an observation
+2.  Wide format: Rows contain multiple observations
+    1.  Repeated measures
+    2.  Multiple variables
 
-# Functional programming with purrr
+## Gapminder data
 
-# (Optional) Metaprogramming with rlang
+```r
+library("tidyr")
+library("dplyr")
 
-# Writing good software
+str(gapminder)
+```
+
+-   3 ID variables: continent, country, year
+-   3 Observation variables: pop, lifeExp, gdpPercap
+
+## Wide to long with `pivot_longer()`
+
+1.  Load wide gapminder data
+
+    ```r
+    gap_wide <- read.csv("../data/gapminder_wide.csv", stringsAsFactors = FALSE)
+    str(gap_wide)
+    ```
+
+2.  Group comparable columns into a single variable. Here we group all
+    of the \"pop\" columns, all of the \"lifeExp\" columns, and all of
+    the \"gdpPercap\" columns.
+
+    ```r
+    gap_long <- gap_wide %>%
+      pivot_longer(
+        cols = c(starts_with('pop'), starts_with('lifeExp'), starts_with('gdpPercap')),
+        names_to = "obstype_year", values_to = "obs_values"
+      )
+
+    str(gap_long)
+    head(gap_long, n=20)
+    ```
+
+    1.  Original column headers become keys
+    2.  Original column values become values
+    3.  This pushes **all** values into a single column, which is
+        unintuitive. We will generate the intermediate format later.
+
+3.  (Optional) Same pivot operation as (2), specifying the columns to be
+    omitted rather than included.
+
+    ```r
+    gap_long <- gap_wide %>%
+      pivot_longer(
+        cols = c(-continent, -country),
+        names_to = "obstype_year", values_to = "obs_values"
+      )
+
+    str(gap_long)
+    ```
+
+4.  Split compound variables into individual variables
+
+    ```r
+    gap_long <- gap_long %>% separate(obstype_year, into = c('obs_type', 'year'), sep = "_")
+    gap_long$year <- as.integer(gap_long$year)
+    ```
+
+## Long to intermediate with `pivot_wider()`
+
+1.  Recreate the original gapminder data frame (as a tibble)
+
+    ```r
+    ## Read in the original data without factors for comparison purposes
+    gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = FALSE)
+
+    gap_normal <- gap_long %>%
+      pivot_wider(names_from = obstype, values_from = obs_values)
+
+    str(gap_normal)
+    str(gapminder)
+    ```
+
+2.  Rearrange the column order of `gap_normal` so that it matches
+    `gapminder`
+
+    ```r
+    gap_normal <- gap_normal[, names(gapminder)]
+    ```
+
+3.  Check whether the data frames are equivalent (they aren\'t yet)
+
+    ```r
+    all.equal(gap_normal, gapminder)
+
+    head(gap_normal)
+    head(gapminder)
+    ```
+
+4.  Change the sort order of `gap_normal` so that it matches
+
+    ```r
+    gap_normal <- gap_normal %>% arrange(country, year)
+    all.equal(gap_normal, gapminder)
+    ```
+
+## Long to wide with `pivot_wider()`
+
+```r
+```
+
+1.  Create variable labels for wide columns. In this case, the new
+    variables are all combinations of metric (pop, lifeExp, or
+    gdpPercap) and year. Effectively we are squishing many columns
+    together.
+
+    ```r
+    help(unite)
+
+    df_temp <- gap_long %>%
+      ## unite(ID_var, continent, country, sep = "_") %>%
+      unite(var_names, obs_type, year, sep = "_")
+
+    str(df_temp)
+    head(df_temp, n=20)
+    ```
+
+2.  Pivot to wide format, distributing data into columns for each unique
+    label
+
+    ```r
+    gap_wide_new <- gap_long %>%
+      ## unite(ID_var, continent, country, sep = "_") %>%
+      unite(var_names, obs_type, year, sep = "_") %>%
+      pivot_wider(names_from = var_names, values_from = obs_values)
+
+    str(gap_wide_new)
+    ```
+
+3.  Sort columns alphabetically by variable name, then check for
+    equality. You can move a single column to a different positions with
+    `relocate()`
+
+    ```r
+    gap_wide_new <- gap_wide_new[,order(colnames(gap_wide_new))]
+    all.equal(gap_wide, gap_wide_new)
+    ```
+
+# Additional tidyverse libraries
+
+## Reading data with readr
+
+Fast, user-friendly file imports.
+
+## String processing with stringr
+
+Real string processing for R.
+
+## Functional programming with purrr
+
+Functional programming for the Tidyverse. The `map` family of functions
+replaces the `apply` family for most use cases. Map functions are
+strongly typed. For example, you can use `purrr:::map_chr()` to extract
+nested data from a list:
+
+```r
+## View the relevant map function
+library("purrr")
+help(map_chr)
+
+## Returns vector
+authors <- map_chr(books, ~.x$author)
+```
+
+1.  The `~` operation in Purrr creates an anonymous function that
+    applies to all the elements in the `.x` collection.
+    1.  Best overview in `as_mapper()` documentation:
+        <https://purrr.tidyverse.org/reference/as_mapper.html>
+    2.  <https://stackoverflow.com/a/53160041>
+    3.  <https://stackoverflow.com/a/62488532>
+    4.  <https://stackoverflow.com/a/44834671>
+2.  Additional references
+    1.  <https://purrr.tidyverse.org/reference/map.html>
+    2.  <https://jtr13.github.io/spring19/ss5593&fq2150.html>
+
+# (Optional) Database interfaces
+
+## Data frame joins with dplyr
+
+1.  <https://jozef.io/r006-merge/#alternatives-to-base-r>
+2.  <https://dplyr.tidyverse.org/reference/mutate-joins.html>
+
+## Access databases using dplyr
+
+1.  <https://dbplyr.tidyverse.org>
 
 # **Endnotes**
 
@@ -1467,7 +1936,7 @@ dir(path = "processed", pattern = "north_america_[1-9]*.csv")
     So if you want first-year stats output in a design with more than 2
     levels in the factor, put this at the top of the R code:
 
-    ``` r
+    ```r
     options(contrasts = c("contr.sum","contr.poly"))
     ```
 
@@ -1477,5 +1946,7 @@ dir(path = "processed", pattern = "north_america_[1-9]*.csv")
 # Data Sources
 
 1.  Gapminder data:
-    <https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_data.csv>
-    <https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_wide.csv>
+    -   <https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_data.csv>
+    -   <https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_wide.csv>
+2.  JSON derived from Microsoft sample XML file:
+    <https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ms762271(v=vs.85>)

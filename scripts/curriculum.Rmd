@@ -31,10 +31,10 @@ logical -> integer -> numeric -> complex -> character
 
 ### Challenge 1
 
-1. Make a vector with numbers 1 - 26
-2. Multiply the vector by 2
-3. Name the vector elements A - Z (Hint: there is a built-in vector called `LETTERS`)
-4. Print the last five items
+1.  Make a vector with numbers 1 - 26
+2.  Multiply the vector by 2
+3.  Name the vector elements A - Z (Hint: there is a built-in vector called `LETTERS`)
+4.  Print the last five items
 
 ### Challenge 2
 
@@ -64,9 +64,9 @@ matrix(c(4, 1, 9, 5, 10, 7), ncol = 2, byrow = TRUE)
 
 Create a new data frame from `gapminder` that includes the following columns:
 
-1. country
-2. year
-3. gdpPercap
+1.  country
+2.  year
+3.  gdpPercap
 
 ### Challenge 4
 
@@ -75,6 +75,7 @@ Create a new data frame that contains all of the 21st century data from European
 ## Control Flow
 
 ### Conditional template
+
 ```{r conditional_statements}
 
 # if
@@ -109,9 +110,8 @@ x = (1^2) + (2^2) + (3^2) + ... + (n^2)
 
 This would be tedious to type out, and impossible for high values of n.
 
-1. Use vectorisation to compute x when n=100.
-2. What is the sum when n=10,000?
-
+1.  Use vectorisation to compute x when n=100.
+2.  What is the sum when n=10,000?
 
 ## Functions
 
@@ -121,13 +121,59 @@ This would be tedious to type out, and impossible for high values of n.
 
 my_function <- function(parameters) {
     do something
-    
     return value
 }
 ```
 
 ### Challenge 6
 
-1. Calculate the total GDP for each North American country in 1952 and 1957
-2. Save your results as a CSV file called `north_america_1.csv` in a subfolder called `processed`.
+1.  Calculate the total GDP for each North American country in 1952 and 1957
+2.  Save your results as a CSV file called `north_america_1.csv` in a subfolder called `processed`.
 
+## Data frame manipulation with dplyr
+
+### dplyr functions
+
+```{r dplyr_verbs}
+
+select()
+filter()
+group_by()
+summarize()
+mutate()
+
+```
+
+### Challenge 7
+
+Create a data frame that has the African values for `lifeExp`, `country`, and `year`.
+
+
+## Tidyverse in the wild
+
+![Highest single contributors to increased mortality by age group, gender, and race between 2018/2019 average and 2020 totals for younger people](../images/nri_tidyverse.png)
+
+Credit: https://twitter.com/NewRiverInvest/status/1538984422518599680
+
+```{r tidyverse_example}
+
+deaths %>% rename (age_group = "Ten-Year Age Groups",
+                   injury_mechanism = "Injury Mechanism & All Other Leading Causes") %>%
+    rename_with (tolower) %>%
+    mutate (precov = if_else(year < 2020, 'precov', 'postcov')) %>%
+    group_by (age_group, race, gender, injury_mechanism, precov) %>%
+    summarise (across (c(deaths, population), mean)) %>%
+    pivot_wider (names_from = 'precov', values_from = c(deaths, population)) %>%
+    select (!c(ends_with('NA'))) %>%
+    na.omit() %>%
+    mutate (death_increases = deaths_postcov - deaths_precov) %>%
+    arrange (desc(death_increases)) %>%
+    group_by (age_group, race, gender) %>%
+    filter (death increases == max(death increases)) %>%
+    ungroup %>%
+        arrange (desc(death_increases)) %>%
+        select (age_group, race, gender, injury _mechanism, death _increases) %>%
+        filter (age_group %in% c('15-24 years', '25-34 years', '25-44 years', '45-54 years')) %>%
+        print (n=32)
+
+```

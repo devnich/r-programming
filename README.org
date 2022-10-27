@@ -552,7 +552,7 @@ cats <- na.omit(cats)
 
 ** Working with realistic data
 #+begin_src R
-gapminder <- read.csv("data/gapminder_data.csv", stringsAsFactors = TRUE)
+gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
 
 # Get an overview of the data frame
 str(gapminder)
@@ -732,11 +732,11 @@ See /scripts/curriculum.Rmd
    #+BEGIN_SRC R
    x <- 1:4
 
-   if any(x < 2) {
+   if (any(x < 2)) {
      print("Some x less than 2")
    }
 
-   if all(x < 2){
+   if (all(x < 2)){
      print("All x less than 2")
    }
    #+END_SRC
@@ -784,14 +784,32 @@ x + z
 #+end_src
 
 ** Logical comparisons
-#+begin_src R
-x > 2
-a <- (x > 2) # you can assign the output to a variable
+1. Do the elements match a criterion?
+   #+begin_src R
+   x > 2
+   a <- (x > 2) # you can assign the output to a variable
 
-# Evaluate a boolean vector
-any(a)
-all(a)
-#+end_src
+   # Evaluate a boolean vector
+   any(a)
+   all(a)
+   #+end_src
+
+2. Can you detect missing data?
+   #+begin_src R
+   nan_vec <- c(1, 3, NaN)
+
+   ## Which elements are NaN?
+   is.nan(nan_vec)
+
+   ## Which elements are not NaN?
+   !is.nan(nan_vec)
+
+   ## Are any elements NaN?
+   any(is.nan(nan_vec))
+
+   ## Are all elements NaN?
+   all(is.nan(nan_vec))
+   #+end_src
 
 ** Matrix operations are also element-wise by default
 #+begin_src R
@@ -865,6 +883,10 @@ sapply(lst, length, simplify = FALSE)
 
 2. Extract all of the authors with ~lapply()~. This requires us to define an /anonymous function/.
    #+BEGIN_SRC R
+   ## Extract a single author
+   books[["bk110"]]$author
+
+   ## Use lapply to extract all the authors
    authors <- lapply(books, function(x) x$author)
 
    ## Returns list
@@ -879,25 +901,21 @@ sapply(lst, length, simplify = FALSE)
    str(authors)
    #+END_SRC
 
-** (Optional) Use ~purrr:::map_chr()~ to extract nested data from a list
-#+BEGIN_SRC R
-## View the relevant map function
-library("purrr")
-help(map_chr)
+** (Optional) Convert nested list into data frame
+1. Method 1: Create a list of data frames, then bind them together into a single data frame
+   #+BEGIN_SRC R
+   ## This approach omits the top-level book id
+   df <- do.call(rbind, lapply(books, data.frame))
+   #+END_SRC
 
-## Returns vector
-authors <- map_chr(books, ~.x$author)
-#+END_SRC
+   - ~lapply()~ applies a given function for each element in a list, so there will be several function calls.
+   - ~do.call()~ applies a given function to the list as a whole, so there is only one function call.
 
-1. The ~~.x~ operation in Purrr creates an anonymous function that applies to all the elements in the collection (in general, the Tidyverse uses ~.~ as a shorthand for "for each element")
-   1. Best overview in ~as_mapper()~ documentation: https://purrr.tidyverse.org/reference/as_mapper.html
-   2. https://stackoverflow.com/a/53160041
-   3. https://stackoverflow.com/a/62488532
-   4. https://stackoverflow.com/a/44834671
-
-2. Additional references
-   1. https://purrr.tidyverse.org/reference/map.html
-   2. https://jtr13.github.io/spring19/ss5593&fq2150.html
+2. Method 2: Use the ~rbindlist()~ function from data.table
+   #+BEGIN_SRC R
+   ## This approach includes the top-level book id
+   df <- data.table::rbindlist(books, idcol = TRUE)
+   #+END_SRC
 
 * Functions explained
 Functions let you encapsulate and re-use chunks of code. This has several benefits:
@@ -974,8 +992,16 @@ sapply(temps, f_to_kelvin)
    #+END_SRC
 
 ** Working with rich data
+#+BEGIN_SRC R
+## Prerequisites
+gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
+north_america <- c("Canada", "Mexico", "United States")
+#+END_SRC
+
 1. Calculate the total GDP for each entry in the data set
    #+BEGIN_SRC R
+   gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
+
    gdp <- gapminder$pop * gapminder$gdpPercap
    #+END_SRC
 
@@ -990,7 +1016,7 @@ sapply(temps, f_to_kelvin)
      }
      gdp <- df$pop * df$gdpPercap
 
-     new_df <- cbind(df, totalGDP=gdp)
+     new_df <- cbind(df, gdp=gdp)
      return(new_df)
    }
    #+END_SRC
@@ -1001,13 +1027,17 @@ sapply(temps, f_to_kelvin)
 See data/curriculum.Rmd
 
 * Reading and writing data
-** Create sample data sets and write them to the `data` directory
+** Create sample data sets and write them to the `processed` directory
 #+BEGIN_SRC R
+if (!dir.exists("../processed")) {
+  dir.create("../processed")
+}
+
 for (year in unique(gapminder$year)) {
   df <- calcGDP(gapminder, year = year, country = north_america)
 
-  ## Generate a file name
-  fname <- paste("processed/north_america_", as.character(year), ".csv", sep = "")
+  ## Generate a file name. This will fail if "processed" doesn't exist
+  fname <- paste("../processed/north_america_", as.character(year), ".csv", sep = "")
 
   ## Write the file
   write.csv(x = df, file = fname, row.names = FALSE)
@@ -1016,8 +1046,8 @@ for (year in unique(gapminder$year)) {
 
 ** How to find files
 #+BEGIN_SRC R
-## Get matching files from the `data` subdirectory
-dir(path = "processed", pattern = "north_america_[1-9]*.csv")
+## Get matching files from the `processed` subdirectory
+dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
 #+END_SRC
 
 ** Read files using a for loop
@@ -1027,10 +1057,10 @@ dir(path = "processed", pattern = "north_america_[1-9]*.csv")
    df_list <- list()
 
    ## Get the locations of the matching files
-   file_names <- dir(path = "processed", pattern = "north_america_[1-9]*.csv")
+   file_names <- dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
 
    for (f in file_names){
-     df_list[[f]] <- read.csv(file = file.path("processed", f))
+     df_list[[f]] <- read.csv(file = file.path("../processed", f), stringsAsFactors = TRUE)
    }
    #+END_SRC
 
@@ -1038,49 +1068,378 @@ dir(path = "processed", pattern = "north_america_[1-9]*.csv")
    #+BEGIN_SRC R
    length(df_list)
    names(df_list)
+   lapply(df_list, length)
    df_list[["north_america_1952.csv"]]
    #+END_SRC
 
 ** Read files using apply
 1. Instead of a for loop that handles each file individually, use a single vectorized function.
    #+BEGIN_SRC R
-   df_list <- lapply(file.path("processed", file_names), read.csv)
-   #+END_SRC
+   df_list <- lapply(file.path("../processed", file_names), read.csv, stringsAsFactors = TRUE)
 
-2. This doesn't add names by default, so you will have to add them manually
-   #+BEGIN_SRC R
+   ## The resulting list does not have names set by default
+   names(df_list)
+
    ## You can still access by index position
    df_list[[2]]
+   #+END_SRC
 
-   names(df_list)
+2. (Optional) Automatically set names for the output list
+   This example sets each name to the complete path name (e.g., ~"../processed/north_america_1952.csv"~).
+   #+BEGIN_SRC R
+   df_list <- sapply(file.path("../processed", file_names), read.csv, simplify = FALSE, USE.NAMES = TRUE)
+   #+END_SRC
+
+3. (Optional) Add names manually
+   #+BEGIN_SRC R
    names(df_list) <- file_names
    df_list[["north_america_1952.csv"]]
    #+END_SRC
 
-* *WEEK 3: Tidyverse*
-* Pipes
-** COMMENT Read files using apply with pipes
-NB: this is an impoverished example
+** Concatenate list of data frames into a single data frame
+1. Method 1: Create a list of data frames, then bind them together into a single data frame
+   #+BEGIN_SRC R
+   df <- do.call(rbind, df_list)
+   #+END_SRC
 
-Pipes allow you to use an alternative formatting for collections of functions that can be easier to read.
+   - ~lapply()~ applies a given function for each element in a list, so there will be several function calls.
+   - ~do.call()~ applies a given function to the list as a whole, so there is only one function call.
+
+2. (Optional) Method 2: Use the ~rbindlist()~ function from data.table. This /can/ be faster for large data sets. It also give you the option of preserving the list names (in this case, the source file names) as a new column in the new data frame.
+   #+BEGIN_SRC R
+   df_list <- sapply(file.path("../processed", file_names), read.csv, simplify = FALSE, USE.NAMES = TRUE)
+   df <- data.table::rbindlist(df_list, idcol = TRUE)
+   #+END_SRC
+
+* *WEEK 3: Tidyverse*
+* Data frame manipulation with dplyr
+** Orientation
 #+BEGIN_SRC R
-df_list <- file.path("data", file_names) |>
-    lapply(read.csv)
+library("dplyr")
 #+END_SRC
 
-* Data frame manipulation with dplyr
 1. Explain Tidyverse briefly: https://www.tidyverse.org/packages/
-2. Explain tibbles briefly
+2. (Optional) Demo unix pipes with ~history | grep~
+3. Explain tibbles briefly
+4. dplyr allows you to treat data frames like relational database tables; i.e. as /sets/
 
-* Splitting and combining data frames with plyr
-1. Briefly describe split-apply-combine
-2. Aggregate files to a single dataframe
+** Select data frame variables
+1. ~select()~ provides a mini-language for selecting data frame variables
+   #+BEGIN_SRC R
+   df <- select(gapminder, year, country, gdpPercap)
+   str(df)
+   #+END_SRC
+
+2. ~select()~ understands negation (and many other intuitive operators)
+   #+BEGIN_SRC R
+   df2 <- select(gapminder, -continent)
+   str(df2)
+   #+END_SRC
+
+3. You can link multiple operations using pipes. This will be more intuitive once we see this combined with ~filter()~
+   #+BEGIN_SRC R
+   df <- gapminder %>% select(year, country, gdpPercap)
+
+   ## You can use the native pipe. This has a few limitations:
+   ## df <- gapminder |> select(year, country, gdpPercap)
+   #+END_SRC
+
+** Filter data frames by content
+1. Filter by continent
+   #+BEGIN_SRC R
+   df_europe <- gapminder %>%
+     filter(continent == "Europe") %>%
+     select(year, country, gdpPercap)
+
+   str(df_europe)
+   #+END_SRC
+
+2. Filter by continent and year
+   #+BEGIN_SRC R
+   europe_2007 <- gapminder %>%
+     filter(continent == "Europe", year == 2007) %>%
+     select(country, lifeExp)
+
+   str(europe_2007)
+   #+END_SRC
+
+** *(Optional) Challenge 7*: Filter
+See data/curriculum.Rmd
+
+** Group rows
+1. Group data by a data frame variable
+   #+BEGIN_SRC R
+   grouped_df <- gapminder %>% group_by(continent)
+
+   ## This produces a tibble
+   str(grouped_df)
+   #+END_SRC
+
+2. The grouped data frame contains metadata (i.e. bookkeeping) that tracks the group membership of each row. You can inspect this metadata:
+   #+BEGIN_SRC R
+   grouped_df %>% tally ()
+   grouped_df %>% group_keys ()
+   grouped_df %>% group_vars ()
+
+   ## These produce a lot of output:
+   grouped_df %>% group_indices ()
+   grouped_df %>% group_rows ()
+   #+END_SRC
+
+   - More information about grouped data frames: https://dplyr.tidyverse.org/articles/grouping.html
+
+** Summarize grouped data
+1. Calculate mean gdp per capita by continent
+   #+BEGIN_SRC R
+   grouped_df %>% summarise(mean_gdpPercap = mean(gdpPercap))
+   #+END_SRC
+
+2. (Optional) Using pipes allows you to do ad hoc reporting with creating intermediate variables
+   #+BEGIN_SRC R
+   gapminder %>%
+     group_by(continent) %>%
+     summarise(mean_gdpPercap = mean(gdpPercap))
+   #+END_SRC
+
+3. Group data by multiple variables
+   #+BEGIN_SRC R
+   df <- gapminder %>%
+     group_by(continent, year) %>%
+     summarise(mean_gdpPercap = mean(gdpPercap))
+   #+END_SRC
+
+4. Create multiple data summaries
+   #+BEGIN_SRC R
+   df <- gapminder %>%
+     group_by(continent, year) %>%
+     summarise(mean_gdp = mean(gdpPercap),
+               sd_gdp = sd(gdpPercap),
+               mean_pop = mean(pop),
+               sd_pop = sd(pop))
+   #+END_SRC
+
+** Use group counts
+1. ~count()~ lets you get an ad hoc count of any variable
+   #+BEGIN_SRC R
+   gapminder %>%
+     filter(year == 2002) %>%
+     count(continent, sort = TRUE)
+   #+END_SRC
+
+2. ~n()~ gives the number of observations in a group
+   #+BEGIN_SRC R
+   ## Get the standard error of life expectancy by continent
+   gapminder %>%
+     group_by(continent) %>%
+     summarise(se_le = sd(lifeExp)/sqrt(n()))
+   #+END_SRC
+
+** Mutate the data to create new variables
+Mutate creates a new variable within your pipeline
+#+BEGIN_SRC R
+## Total GDP and population by continent and year
+df <- gapminder %>%
+  mutate(gdp_billion = gdpPercap * pop / 10^9) %>%
+  group_by(continent, year) %>%
+  summarise(mean_gdp = mean(gdp_billion),
+            sd_gdp = sd(gdp_billion),
+            mean_pop = mean(pop),
+            sd_pop = sd(pop))
+#+END_SRC
+
+** Add conditional filtering to a pipeline with ~ifelse~
+1. Perform previous calculation, but only in cases in which the life expectancy is over 25
+   #+BEGIN_SRC R
+   df <- gapminder %>%
+     mutate(gdp_billion = ifelse(lifeExp > 25, gdpPercap * pop / 10^9, NA)) %>%
+     group_by(continent, year) %>%
+     summarise(mean_gdp = mean(gdp_billion),
+               sd_gdp = sd(gdp_billion),
+               mean_pop = mean(pop),
+               sd_pop = sd(pop))
+   #+END_SRC
+
+2. Predict future GDP per capita for countries with higher life expectancies
+   #+BEGIN_SRC R
+   df <- gapminder %>%
+     mutate(gdp_expected = ifelse(lifeExp > 40, gdpPercap * 1.5, gdpPercap)) %>%
+     group_by(continent, year) %>%
+     summarize(mean_gdpPercap = mean(gdpPercap),
+               mean_gdpPercap_expected = mean(gdp_expected))
+   #+END_SRC
+
+** *Challenge 8*: Life expectancy in random countries
+#+BEGIN_SRC R
+gapminder %>%
+  filter(year == 2002) %>%
+  group_by(continent) %>%
+  sample_n(2) %>%
+  summarize(mean_lifeExp = mean(lifeExp), country = country) %>%
+  arrange(desc(mean_lifeExp))
+#+END_SRC
 
 * Data frame manipulation with tidyr
-* Producing reports with knitr
-* Functional programming with purrr
-* (Optional) Metaprogramming with rlang
-* Writing good software
+1. Long format: All rows are unique observations (ideally)
+   1. each column is a variable
+   2. each row is an observation
+2. Wide format: Rows contain multiple observations
+   1. Repeated measures
+   2. Multiple variables
+
+** Gapminder data
+#+BEGIN_SRC R
+library("tidyr")
+library("dplyr")
+
+str(gapminder)
+#+END_SRC
+- 3 ID variables: continent, country, year
+- 3 Observation variables: pop, lifeExp, gdpPercap
+
+** Wide to long with ~pivot_longer()~
+1. Load wide gapminder data
+   #+BEGIN_SRC R
+   gap_wide <- read.csv("../data/gapminder_wide.csv", stringsAsFactors = FALSE)
+   str(gap_wide)
+   #+END_SRC
+
+2. Group comparable columns into a single variable. Here we group all of the "pop" columns, all of the "lifeExp" columns, and all of the "gdpPercap" columns.
+   #+BEGIN_SRC R
+   gap_long <- gap_wide %>%
+     pivot_longer(
+       cols = c(starts_with('pop'), starts_with('lifeExp'), starts_with('gdpPercap')),
+       names_to = "obstype_year", values_to = "obs_values"
+     )
+
+   str(gap_long)
+   head(gap_long, n=20)
+   #+END_SRC
+
+   1. Original column headers become keys
+   2. Original column values become values
+   3. This pushes *all* values into a single column, which is unintuitive. We will generate the intermediate format later.
+
+3. (Optional) Same pivot operation as (2), specifying the columns to be omitted rather than included.
+   #+BEGIN_SRC R
+   gap_long <- gap_wide %>%
+     pivot_longer(
+       cols = c(-continent, -country),
+       names_to = "obstype_year", values_to = "obs_values"
+     )
+
+   str(gap_long)
+   #+END_SRC
+
+4. Split compound variables into individual variables
+   #+BEGIN_SRC R
+   gap_long <- gap_long %>% separate(obstype_year, into = c('obs_type', 'year'), sep = "_")
+   gap_long$year <- as.integer(gap_long$year)
+   #+END_SRC
+
+** Long to intermediate with ~pivot_wider()~
+1. Recreate the original gapminder data frame (as a tibble)
+   #+BEGIN_SRC R
+   ## Read in the original data without factors for comparison purposes
+   gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = FALSE)
+
+   gap_normal <- gap_long %>%
+     pivot_wider(names_from = obstype, values_from = obs_values)
+
+   str(gap_normal)
+   str(gapminder)
+   #+END_SRC
+
+2. Rearrange the column order of ~gap_normal~ so that it matches ~gapminder~
+   #+BEGIN_SRC R
+   gap_normal <- gap_normal[, names(gapminder)]
+   #+END_SRC
+
+3. Check whether the data frames are equivalent (they aren't yet)
+   #+BEGIN_SRC R
+   all.equal(gap_normal, gapminder)
+
+   head(gap_normal)
+   head(gapminder)
+   #+END_SRC
+
+4. Change the sort order of ~gap_normal~ so that it matches
+   #+BEGIN_SRC R
+   gap_normal <- gap_normal %>% arrange(country, year)
+   all.equal(gap_normal, gapminder)
+   #+END_SRC
+
+** Long to wide with ~pivot_wider()~
+#+BEGIN_SRC R
+#+END_SRC
+1. Create variable labels for wide columns. In this case, the new variables are all combinations of metric (pop, lifeExp, or gdpPercap) and year. Effectively we are squishing many columns together.
+   #+BEGIN_SRC R
+   help(unite)
+
+   df_temp <- gap_long %>%
+     ## unite(ID_var, continent, country, sep = "_") %>%
+     unite(var_names, obs_type, year, sep = "_")
+
+   str(df_temp)
+   head(df_temp, n=20)
+   #+END_SRC
+
+2. Pivot to wide format, distributing data into columns for each unique label
+   #+BEGIN_SRC R
+   gap_wide_new <- gap_long %>%
+     ## unite(ID_var, continent, country, sep = "_") %>%
+     unite(var_names, obs_type, year, sep = "_") %>%
+     pivot_wider(names_from = var_names, values_from = obs_values)
+
+   str(gap_wide_new)
+   #+END_SRC
+
+3. Sort columns alphabetically by variable name, then check for equality. You can move a single column to a different positions with ~relocate()~
+   #+BEGIN_SRC R
+   gap_wide_new <- gap_wide_new[,order(colnames(gap_wide_new))]
+   all.equal(gap_wide, gap_wide_new)
+   #+END_SRC
+
+* Additional tidyverse libraries
+** Reading data with readr
+Fast, user-friendly file imports.
+
+** String processing with stringr
+Real string processing for R.
+
+** Functional programming with purrr
+Functional programming for the Tidyverse. The ~map~ family of functions replaces the ~apply~ family for most use cases. Map functions are strongly typed. For example, you can use ~purrr:::map_chr()~ to extract nested data from a list:
+#+BEGIN_SRC R
+## View the relevant map function
+library("purrr")
+help(map_chr)
+
+## Returns vector
+authors <- map_chr(books, ~.x$author)
+#+END_SRC
+
+1. The ~~~ operation in Purrr creates an anonymous function that applies to all the elements in the ~.x~ collection.
+   1. Best overview in ~as_mapper()~ documentation: https://purrr.tidyverse.org/reference/as_mapper.html
+   2. https://stackoverflow.com/a/53160041
+   3. https://stackoverflow.com/a/62488532
+   4. https://stackoverflow.com/a/44834671
+
+2. Additional references
+   1. https://purrr.tidyverse.org/reference/map.html
+   2. https://jtr13.github.io/spring19/ss5593&fq2150.html
+
+* (Optional) Database interfaces
+** Data frame joins with dplyr
+1. https://jozef.io/r006-merge/#alternatives-to-base-r
+2. https://dplyr.tidyverse.org/reference/mutate-joins.html
+
+** Access databases using dplyr
+1. https://dbplyr.tidyverse.org
+
+* COMMENT Working with missing data
+* COMMENT (Optional) Metaprogramming with rlang
+* COMMENT (Optional) Metaprogramming with vctrs
+* COMMENT Writing good software
+* COMMENT Producing reports with knitr
 * COMMENT Creating publication-quality graphics with ggplot2
 * *Endnotes*
 * Credits
@@ -1111,8 +1470,9 @@ df_list <- file.path("data", file_names) |>
 
 * Data Sources
 1. Gapminder data:
-   https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_data.csv
-   https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_wide.csv
+   - https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_data.csv
+   - https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_wide.csv
+2. JSON derived from Microsoft sample XML file: https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ms762271(v=vs.85)
 
 * COMMENT How to export this document to other formats
 ** Export to Markdown using Pandoc
