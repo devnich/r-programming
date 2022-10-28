@@ -1377,21 +1377,40 @@ See data/curriculum.Rmd
 
 ## Create sample data sets and write them to the \`processed\` directory
 
-```r
-if (!dir.exists("../processed")) {
-  dir.create("../processed")
-}
+1.  Preliminaries
 
-for (year in unique(gapminder$year)) {
-  df <- calcGDP(gapminder, year = year, country = north_america)
+    ```r
+    if (!dir.exists("../processed")) {
+      dir.create("../processed")
+    }
 
-  ## Generate a file name. This will fail if "processed" doesn't exist
-  fname <- paste("../processed/north_america_", as.character(year), ".csv", sep = "")
+    north_america <- c("Canada", "Mexico", "United States")
+    ```
 
-  ## Write the file
-  write.csv(x = df, file = fname, row.names = FALSE)
-}
-```
+2.  Version 1: Use `calcGDP` function
+
+    ```r
+    for (year in unique(gapminder$year)) {
+      df <- calcGDP(gapminder, year = year, country = north_america)
+
+      ## Generate a file name. This will fail if "processed" doesn't exist
+      fname <- paste("../processed/north_america_", as.character(year), ".csv", sep = "")
+
+      ## Write the file
+      write.csv(x = df, file = fname, row.names = FALSE)
+    }
+    ```
+
+3.  Version 2: Bypass `calcGDP` function
+
+    ```r
+    for (year in unique(gapminder$year)) {
+      df <- gapminder[gapminder$year == year, ]
+      df <- df[df$country %in% north_america, ]
+      fname <- paste("processed/north_america_", as.character(year), ".csv", sep="")
+      write.csv(x = df, file = fname, row.names = FALSE)
+    }
+    ```
 
 ## How to find files
 
@@ -1410,9 +1429,10 @@ dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
 
     ## Get the locations of the matching files
     file_names <- dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
+    file_paths <- file.path("../processed", file_names)
 
-    for (f in file_names){
-      df_list[[f]] <- read.csv(file = file.path("../processed", f), stringsAsFactors = TRUE)
+    for (f in file_paths){
+      df_list[[f]] <- read.csv(f, stringsAsFactors = TRUE)
     }
     ```
 
@@ -1431,7 +1451,7 @@ dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
     single vectorized function.
 
     ```r
-    df_list <- lapply(file.path("../processed", file_names), read.csv, stringsAsFactors = TRUE)
+    df_list <- lapply(file_paths, read.csv, stringsAsFactors = TRUE)
 
     ## The resulting list does not have names set by default
     names(df_list)
@@ -1440,19 +1460,19 @@ dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
     df_list[[2]]
     ```
 
-2.  (Optional) Automatically set names for the output list This example
+2.  Add names manually
+
+    ```r
+    names(df_list) <- file_names
+    df_list$north_america_1952.csv
+    ```
+
+3.  (Optional) Automatically set names for the output list This example
     sets each name to the complete path name (e.g.,
     `"../processed/north_america_1952.csv"`).
 
     ```r
-    df_list <- sapply(file.path("../processed", file_names), read.csv, simplify = FALSE, USE.NAMES = TRUE)
-    ```
-
-3.  (Optional) Add names manually
-
-    ```r
-    names(df_list) <- file_names
-    df_list[["north_america_1952.csv"]]
+    df_list <- sapply(file_paths, read.csv, simplify = FALSE, USE.NAMES = TRUE)
     ```
 
 ## Concatenate list of data frames into a single data frame
@@ -1661,8 +1681,8 @@ df <- gapminder %>%
                 sd_pop = sd(pop))
     ```
 
-2.  Predict future GDP per capita for countries with higher life
-    expectancies
+2.  (Optional) Predict future GDP per capita for countries with higher
+    life expectancies
 
     ```r
     df <- gapminder %>%
@@ -1853,7 +1873,11 @@ nested data from a list:
 ```r
 ## View the relevant map function
 library("purrr")
+library("jsonlite")
+
 help(map_chr)
+
+books <- fromJSON("books.json")
 
 ## Returns vector
 authors <- map_chr(books, ~.x$author)
