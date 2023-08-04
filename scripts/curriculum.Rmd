@@ -185,3 +185,15 @@ deaths %>% rename (age_group = "Ten-Year Age Groups",
         print (n=32)
 
 ```
+
+## ggplot2
+
+### ggplot2 template
+
+```{r ggplot2_template}
+
+ggplot(data = <data>,
+       mapping = aes(<mappings>)) +
+  geom_xxx()
+
+```
