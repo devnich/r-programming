@@ -145,3 +145,60 @@ deaths %>% rename (age_group = "Ten-Year Age Groups",
         select (age_group, race, gender, injury _mechanism, death _increases) %>%
         filter (age_group %in% c('15-24 years', '25-34 years', '25-44 years', '45-54 years')) %>%
         print (n=32)
+
+##-------------------------------------------------
+## Basic Visualization
+##-------------------------------------------------
+
+data("anscombe")
+print(anscombe)
+
+# Central tendency measures
+mean(anscombe$x1)
+apply(anscombe[,1:4], 2, mean)
+apply(anscombe[,5:8], 2, mean)
+apply(anscombe, 2, var)
+
+# Correlations
+cor(anscombe$x1, anscombe$y1)
+cor(anscombe$x2, anscombe$y2)
+cor(anscombe$x3, anscombe$y3)
+cor(anscombe$x4, anscombe$y4)
+
+# Linear regression parameters
+m1 <- lm(anscombe$y1 ~ anscombe$x1)
+m2 <- lm(anscombe$y2 ~ anscombe$x2)
+m3 <- lm(anscombe$y3 ~ anscombe$x3)
+m4 <- lm(anscombe$y4 ~ anscombe$x4)
+
+coef(m1)
+coef(m2)
+coef(m3)
+coef(m4)
+
+## Plot the data and regression lines
+
+# Linear regression coefficients
+mlist <- list(m1, m2, m3, m4)
+lapply(mlist, coef)
+
+# Plots
+plot(anscombe$y1 ~ anscombe$x1)
+abline(mlist[[1]])
+
+plot(anscombe$y2 ~ anscombe$x2)
+abline(mlist[[2]])
+
+plot(anscombe$y3 ~ anscombe$x3)
+abline(mlist[[3]])
+
+plot(anscombe$y4 ~ anscombe$x4)
+abline(mlist[[4]])
+
+
+##-------------------------------------------------
+## ggplot2
+##-------------------------------------------------
+library(tidyverse)
+
+surveys_complete <- read_csv("../data/processed/surveys_complete.csv")

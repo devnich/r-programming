@@ -257,6 +257,11 @@ help(write.csv)
 help("<-")
 #+END_SRC
 
+*** Introspection
+#+BEGIN_SRC R
+methods()
+#+END_SRC
+
 *** Library examples
 #+BEGIN_SRC R
 vignette("dplyr")
@@ -1563,6 +1568,7 @@ https://ggplot2.tidyverse.org
 ** References
 - R Project documentation: https://cran.r-project.org/manuals.html
 - CRAN task views: https://cran.r-project.org/web/views/
+- R for Data Science: https://r4ds.had.co.nz/index.html
 - R Cookbook: http://www.cookbook-r.com
 - RStudio cheat sheets: https://www.rstudio.com/resources/cheatsheets/
 - Matrix algebra operations in R: https://www.statmethods.net/advstats/matrix.html
