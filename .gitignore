@@ -4,6 +4,7 @@
 *.~lock.*
 *.orig
 tmp.md
+*.html
 
 # System files
 .DS_Store
@@ -25,3 +26,6 @@ processed/
 
 # Archives
 *.zip
+
+# Generated files
+*.png

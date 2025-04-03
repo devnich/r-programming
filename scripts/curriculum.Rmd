@@ -62,7 +62,7 @@ matrix(c(4, 1, 9, 5, 10, 7), ncol = 2, byrow = TRUE)
 
 ### Challenge 3
 
-Create a new data frame from `gapminder` that includes the following columns:
+Look at the help documentation for the `data.frame` function. Create a new data frame from `gapminder` that includes the following columns:
 
 1.  country
 2.  year

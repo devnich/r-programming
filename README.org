@@ -3,11 +3,6 @@
 
 #+TITLE: Programming in R
 #+AUTHOR: Derek Devnich
-#+BEGIN_SRC R
-#+END_SRC
-#+BEGIN_SRC bash
-#+END_SRC
-
 * Fundamentals (Week 1)
 ** Introduction to RStudio
 *** Orientation
@@ -370,7 +365,7 @@ typeof("banana")
 *** *Challenge 1*: Generate and label a vector
 See /scripts/curriculum.Rmd
 
-*** Matrices
+*** (Optional) Matrices
 1. A matrix is 2-dimensional vector
    #+BEGIN_SRC R
    # Create a matrix of zeros
@@ -410,6 +405,121 @@ See /scripts/curriculum.Rmd
    #+END_SRC
 
 *** Data Frames are central to working with tabular data
+1. Import data from a CSV file. You can use ~read.delim()~ for tab-delimited files, or ~read.table()~ for flexible, general-purpose input.
+   #+BEGIN_SRC R
+   plots <- read.csv(file = "data/plots.csv", stringsAsFactors = FALSE)
+
+   plots # show contents of data frame
+   str(plots) # inspect structure of data frame
+
+   plots <- read.csv(file = "data/plots.csv", stringsAsFactors = TRUE)
+   str(plots) # the chr column is now a factor column
+   #+END_SRC
+
+2. Access the column (vectors) of the data frame
+   #+BEGIN_SRC R
+   plots$plot_id
+   plots$plot_type
+   #+END_SRC
+
+3. A vector can only hold one type. Therefore, in a data frame each data column (vector) has to be a single type.
+   #+BEGIN_SRC R
+   typeof(plots$plot_id)
+   #+END_SRC
+
+4. Data frames have column names
+   ~names()~ gets or sets a name
+   #+BEGIN_SRC R
+   names(plots)
+   names(plots)[1] <- "id"
+   plots
+   #+END_SRC
+
+5. Use data frame vectors in operations
+   #+BEGIN_SRC R
+   # Function applies to every element of the vector
+   paste("Enclosure type is", plots$plot_type)
+   plots$id * 2
+
+   # Operations are ephemeral unless their outputs are reassigned to the variable
+   plots <- plots$id * 2
+   #+END_SRC
+
+*** Working with realistic data
+#+begin_src R
+gapminder <- read.csv("data/gapminder_long.csv", stringsAsFactors = TRUE)
+
+# Get an overview of the data frame
+str(gapminder)
+dim(gapminder)
+
+# It's a list
+length(gapminder)
+colnames(gapminder)
+
+# Look at the data
+summary(gapminder$gdpPercap)  # summary varies by data type
+head(gapminder)
+#+end_src
+
+*** Lists
+1. Let's re-inspect our Gapminder data
+   #+begin_src R
+   # It's a list
+   typeof(gapminder)
+
+   # Properties of a list
+   length(gapminder)
+   colnames(gapminder)
+
+   # It's also a data frame!
+   class(gapminder)
+   #+end_src
+
+2. Lists can contain anything
+   #+BEGIN_SRC R
+   list1 <- list(1, "a", TRUE)
+
+   # Inspect each element of the list
+   list1[[1]]
+   list1[[2]]
+   list1[[3]]
+   #+END_SRC
+
+3. If you use a single bracket ~[]~, you get back a shorter section of the list, which is also a list. Use double brackets ~[[]]~ to drill down to the actual value.
+   #+BEGIN_SRC R
+   list2 <- list(first = 1, second = "a", third = TRUE)
+
+   # Single brackets retrieve a slice of the list, containing the name:value pair
+   list2[2]
+
+   # Double brackets retrieve the value, i.e. the contents of the list item
+   list2[[3]]
+   #+END_SRC
+
+4. (Optional) Some operations return lists, others return vectors (basically, are you getting the column with its label, or are you drilling down to the data?)
+   1. Get list slices
+      #+BEGIN_SRC R
+      # List slices
+      plots[2]           # list slice by index
+      plots["plot_type"] # list slice by name
+      plots[1, ]         # get data frame row by row number
+      #+END_SRC
+
+   2. Get list contents (in this case, vectors)
+      #+BEGIN_SRC R
+      # List contents (in this case, vectors)
+      plots[[2]]           # content by index
+      plots[["plot_type"]] # content by name
+      plots$plot_type      # content by name; shorthand for previous
+      plots[, 1]           # content by index, across all rows
+      plots[1, 1]          # content by index, single row
+      #+END_SRC
+
+   3. You can inspect all of these with ~typeof()~
+   4. Note that you can address data frames by row and columns
+
+*** COMMENT OLD Data Frames are central to working with tabular data
 1. Create a data frame
    #+BEGIN_SRC R
    coat = c("calico", "black", "tabby")
@@ -465,80 +575,35 @@ See /scripts/curriculum.Rmd
    cats
    #+END_SRC
 
-*** Lists
-1. Lists can contain anything
-   #+BEGIN_SRC R
-   list1 <- list(1, "a", TRUE, 1+4i)
-
-   # Inspect each element of the list
-   list1[[1]]
-   list1[[2]]
-   list1[[3]]
-   list1[[4]]
-   #+END_SRC
-   If you use a single bracket ~[]~, you get back a shorter section of the list, which is also a list. Use double brackets ~[[]]~ to drill down to the actual value.
-
-2. (Optional) This includes complex data structures
-   #+BEGIN_SRC R
-   list2 <- list(title = "Numbers", numbers = 1:10, data = TRUE)
-
-   # Single brackets retrieve a slice of the list, containing the name:value pair
-   list2[2]
-
-   # Double brackets retrieve the value, i.e. the contents of the list item
-   list2[[2]]
-   #+END_SRC
-
-3. Data frames are lists of vectors and factors
-   #+BEGIN_SRC R
-   typeof(cats)
-   #+END_SRC
-
-4. Some operations return lists, others return vectors (basically, are you getting the column with its label, or are you drilling down to the data?)
-   1. Get list slices
-      #+BEGIN_SRC R
-      # List slices
-      cats[1]      # list slice by index
-      cats["coat"] # list slice by name
-      cats[1, ]    # get data frame row by row number
-      #+END_SRC
-
-   2. Get list contents (in this case, vectors)
-      #+BEGIN_SRC R
-      # List contents (in this case, vectors)
-      cats[[1]]      # content by index
-      cats[["coat"]] # content by name
-      cats$coat      # content by name; shorthand for `cats[["coat"]]`
-      cats[, 1]      # content by index, across all rows
-      cats[1, 1]     # content by index, single row
-      #+END_SRC
-
-   3. You can inspect all of these with ~typeof()~
-   4. Note that you can address data frames by row and columns
-
 *** *(Optional) Challenge 2*: Creating matrices
 See /scripts/curriculum.Rmd
 
-** Exploring data frames
-*** Adding columns
+*** *Challenge 3*: New gapminder data frame
+See /scripts/curriculum.Rmd
+
+** Creating data frames
+*** Create a new data frame
 #+begin_src R
-age <- c(2, 3, 5)
-cbind(cats, age)
-cats                     # cats is unchanged
-cats <- cbind(cats, age) # overwrite old cats
+gap <- data.frame(country = gapminder$country, year = gapminder$year, gdp = gapminder$gdpPercap)
 #+end_src
 
+*** Adding columns
 #+begin_src R
-# Data frames enforce consistency
-age <- c(2, 5)
-cats <- cbind(cats, age)
+cbind(gap, continent = gapminder$continent)
+str(gap)                                           # cats is unchanged
+
+gap <- cbind(gap, continent = gapminder$continent) # overwrite old cats
+str(gap)
 #+end_src
 
 *** Appending rows (remember, rows are lists!)
 #+begin_src R
-newRow <- list("tortoiseshell", 3.3, TRUE, 9)
-cats <- rbind(cats, newRow)
+newRow <- list("Afghanistan", 2023, 415.71, "Asia")
+gap <- rbind(gap, newRow)
+#+end_src
 
+*** COMMENT OLD Appending rows (remember, rows are lists!)
+#+begin_src R
 # Legal values added, illegal values are NA
 cats
 
@@ -547,33 +612,13 @@ levels(cats$coat) <- c(levels(cats$coat), "tortoiseshell")
 cats <- rbind(cats, list("tortoiseshell", 3.3, TRUE, 9))
 #+end_src
 
-*** Removing missing data
+*** COMMENT OLD Removing missing data
 ~cats~ is now polluted with missing data
 #+begin_src R
 na.omit(cats)
 cats
 cats <- na.omit(cats)
 #+end_src
-
-*** Working with realistic data
-#+begin_src R
-gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
-
-# Get an overview of the data frame
-str(gapminder)
-dim(gapminder)
-
-# It's a list
-length(gapminder)
-colnames(gapminder)
-
-# Look at the data
-summary(gapminder$gdpPercap)  # summary varies by data type
-head(gapminder)
-#+end_src
-
-*** *Challenge 3*: New gapminder data frame
-See /scripts/curriculum.Rmd
 
 ** Subsetting data
 *** Subset by index
@@ -611,7 +656,7 @@ names(v) <- letters[1:5]
    v[! names(v) %in% c("a", "c")]
    #+END_SRC
 
-*** Subsetting matrices
+*** (Optional) Subsetting matrices
 #+BEGIN_SRC R
 m <- matrix(1:28, nrow = 7, byrow = TRUE)
 
@@ -656,22 +701,12 @@ l[[names(l) %in% c("a", "c")]]
    v[v < 3 | v > 4]
    #+END_SRC
 
-*** (Optional) Subset by factor
-#+BEGIN_SRC R
-# First three items
-gapminder$country[1:3]
-
-# All items in factor set
-north_america <- c("Canada", "Mexico", "United States")
-gapminder$country[gapminder$country %in% north_america]
-#+END_SRC
-
 *** Subsetting Data Frames
 Data frames have characteristics of both lists and matrices.
 
 1. Get first three rows
    #+BEGIN_SRC R
-   gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
+   gapminder <- read.csv("data/gapminder_long.csv", stringsAsFactors = TRUE)
 
    # Get first three rows
    gapminder[1:3,]
@@ -696,6 +731,16 @@ Data frames have characteristics of both lists and matrices.
    gapminder[gapminder$country %in% north_america & gapminder$year > 1999,]
    gapminder[gapminder$country %in% north_america & gapminder$year > 1999, c("country", "pop")]
    #+END_SRC
+
+*** (Optional) Subset by factor
+#+BEGIN_SRC R
+# First three items
+gapminder$country[1:3]
+
+# All items in factor set
+north_america <- c("Canada", "Mexico", "United States")
+gapminder$country[gapminder$country %in% north_america]
+#+END_SRC
 
 *** *Challenge 4*: Extract data by region
 See /scripts/curriculum.Rmd
