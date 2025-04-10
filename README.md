@@ -987,7 +987,7 @@ See /scripts/curriculum.Rmd
 
 `apply()` lets you apply an arbitrary function over a collection. This is an example of a higher-order function (map, apply, filter, reduce, fold, etc.) that can (and should) replace loops for most purposes. They are an intermediate case between vectorized operations (very fast) and for loops (very slow). Use them when you need to build a new collection and vectorized operations aren't available.
 
-### `apply()`: Apply a function over the margins of an array
+### (Optional) `apply()`: Apply a function over the margins of an array
 
 ``` r
 m <- matrix(1:28, nrow = 7, byrow = TRUE)
@@ -1002,6 +1002,7 @@ apply(m, 2, sum)
 
 ``` r
 lst <- list(title = "Numbers", numbers = 1:10, data = TRUE)
+str(lst)
 
 ## length() returns the length of the whole list
 length(lst)
@@ -1020,7 +1021,7 @@ sapply(lst, length)
 sapply(lst, length, simplify = FALSE)
 ```
 
-### Use `apply` and friends to extract nested data from a list
+### (Optional) Use `apply` and friends to extract nested data from a list
 
 1.  Read a file JSON into a nested list
 
@@ -1176,7 +1177,27 @@ north_america <- c("Canada", "Mexico", "United States")
     gdp <- gapminder$pop * gapminder$gdpPercap
     ```
 
-2.  Write a function to perform a total GDP calculation on a filtered subset of your data.
+2.  Write a function to perform a total GDP calculation on a filtered subset of your data. Begin with the minimal working function.
+
+    ``` r
+    calcGDP <- function(df, year, country) {
+      # Note that year and country are vectors
+      # Get rows that match year
+      df <- df[df$year %in% year, ]
+
+      # Get subset of year rows that match country
+      df <- df[df$country %in% country,]
+
+      # Calculate total GDP
+      gdp <- df$pop * df$gdpPercap
+
+      # Return new data frame with GDP column
+      new_df <- cbind(df, gdp=gdp)
+      return(new_df)
+    }
+    ```
+
+3.  (Optional) Add defensive programming elements
 
     ``` r
     calcGDP <- function(df, year=NULL, country=NULL) {
@@ -1193,7 +1214,7 @@ north_america <- c("Canada", "Mexico", "United States")
     }
     ```
 
-3.  Mutating `df` inside the function doesn't affect the global `gapminder` data frame (because of pass-by-value and scope).
+4.  Mutating `df` inside the function doesn't affect the global `gapminder` data frame (because of pass-by-value and scope).
 
 ### **Challenge 6**: Testing and debugging your function
 
@@ -1227,7 +1248,7 @@ See data/curriculum.Rmd
     }
     ```
 
-3.  Version 2: Bypass `calcGDP` function
+3.  (Optional) Version 2: Bypass `calcGDP` function
 
     ``` r
     for (year in unique(gapminder$year)) {
