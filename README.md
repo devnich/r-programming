@@ -1,8 +1,3 @@
----
-author: Derek Devnich
-title: Programming in R
----
-
 - [<span class="toc-section-number">1</span> Fundamentals (Week 1)](#fundamentals-week-1)
   - [<span class="toc-section-number">1.1</span> Introduction to RStudio](#introduction-to-rstudio)
   - [<span class="toc-section-number">1.2</span> Introduction to R](#introduction-to-r)
