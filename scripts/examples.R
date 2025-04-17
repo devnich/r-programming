@@ -71,33 +71,52 @@ for (year in unique(gapminder$year)) {
 }
 
 ## --- Aside: Get list of files in subdirectory ---
-dir(path = "../data", pattern = "north_america_[1-9]*.csv")
+#dir(path = "../data", pattern = "north_america_[1-9]*.csv")
+dir(path = "../data", pattern = "gapminder_gdp.*.csv")
 
 ## --- Read files using a for loop ---
 # Create an empty list to hold your input
 df_list <- list()
 
 # Get list of files to read
-file_names <- dir(path = "../data", pattern = "north_america_[1-9]*.csv")
+file_names <- dir(path = "../data", pattern = "gapminder_gdp.*.csv")
 
+# Read files into data frames
 for (f in file_names){
   df_list[[f]] <- read.csv(file = file.path("../data", f))
 }
 
+# Check data frame dimensions
+for (name in names(df_list)) {
+  print(name)
+  print(dim(df_list[[name]]))
+}
+
+# What's going on with Americas?
+for (name in names(df_list)) {
+  print(name)
+  print(dim(df_list[[name]]))
+  print(colnames(df_list[[name]]))
+}
+
+# Drop the continent column for Americas
+americas <- df_list[["gapminder_gdp_americas.csv"]]
+df_list[["gapminder_gdp_americas.csv"]] <- americas[, ! colnames(americas) %in% c("continent")]
+
+# Number of columns don't match
+df <- do.call(rbind, df_list)
+
 ## --- Read files using apply ---
 file_names <- dir(path = "../data", pattern = "north_america_[1-9]*.csv")
 df_list <- lapply(file.path("../data", file_names), read.csv)
-
-names(df_list)
-df_list[[1]]
 names(df_list) <- file_names
+
 
 ## --- Read files using apply with pipes ---
 
 ## Vectorize version with pipes
 df_list <- file.path("../data", file_names) |>
     lapply(read.csv)
-
 
 ##-------------------------------------------------
 ##  Challenges

@@ -148,20 +148,18 @@ mutate()
 
 Create a data frame that has the African values for `lifeExp`, `country`, and `year`.
 
-
 ### Challenge 8
 
-1. Calculate the average life expectancy in 2002 of 2 randomly selected countries for each continent.
-2. Then arrange the continent names in reverse order.
+1.  Calculate the average life expectancy in 2002 of 2 randomly selected countries for each continent.
+2.  Then arrange the continent names in reverse order.
 
 Hint: Use the dplyr functions `arrange()` and `sample_n()`. They have similar syntax to other dplyr functions.
-
 
 ## Tidyverse in the wild
 
 ![Highest single contributors to increased mortality by age group, gender, and race between 2018/2019 average and 2020 totals for younger people](../images/nri_tidyverse.png)
 
-Credit: https://twitter.com/NewRiverInvest/status/1538984422518599680
+Credit: <https://twitter.com/NewRiverInvest/status/1538984422518599680>
 
 ```{r tidyverse_example}
 
