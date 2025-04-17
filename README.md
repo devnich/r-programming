@@ -1,3 +1,8 @@
+---
+author: Derek Devnich
+title: Programming in R
+---
+
 - [<span class="toc-section-number">1</span> Fundamentals (Week 1)](#fundamentals-week-1)
   - [<span class="toc-section-number">1.1</span> Introduction to RStudio](#introduction-to-rstudio)
   - [<span class="toc-section-number">1.2</span> Introduction to R](#introduction-to-r)
@@ -859,20 +864,6 @@ See /scripts/curriculum.Rmd
     }
     ```
 
-5.  Vectorize your tests
-
-    ``` r
-    x <- 1:4
-
-    if (any(x < 2)) {
-      print("Some x less than 2")
-    }
-
-    if (all(x < 2)){
-      print("All x less than 2")
-    }
-    ```
-
 ### Review Subsetting section
 
 Subsetting is frequently an alternative to if-else statements in R
@@ -936,7 +927,21 @@ x + z
     all(a)
     ```
 
-2.  Can you detect missing data?
+2.  Vectorize your tests
+
+    ``` r
+    x <- 1:4
+
+    if (any(x < 2)) {
+      print("Some x less than 2")
+    }
+
+    if (all(x < 2)){
+      print("All x less than 2")
+    }
+    ```
+
+3.  Can you detect missing data?
 
     ``` r
     nan_vec <- c(1, 3, NaN)
@@ -1222,48 +1227,13 @@ See data/curriculum.Rmd
 
 ## Reading and writing data
 
-### Create sample data sets and write them to the \`processed\` directory
-
-1.  Preliminaries
-
-    ``` r
-    if (!dir.exists("../processed")) {
-      dir.create("../processed")
-    }
-
-    north_america <- c("Canada", "Mexico", "United States")
-    ```
-
-2.  Version 1: Use `calcGDP` function
-
-    ``` r
-    for (year in unique(gapminder$year)) {
-      df <- calcGDP(gapminder, year = year, country = north_america)
-
-      ## Generate a file name. This will fail if "processed" doesn't exist
-      fname <- paste("../processed/north_america_", as.character(year), ".csv", sep = "")
-
-      ## Write the file
-      write.csv(x = df, file = fname, row.names = FALSE)
-    }
-    ```
-
-3.  (Optional) Version 2: Bypass `calcGDP` function
-
-    ``` r
-    for (year in unique(gapminder$year)) {
-      df <- gapminder[gapminder$year == year, ]
-      df <- df[df$country %in% north_america, ]
-      fname <- paste("processed/north_america_", as.character(year), ".csv", sep="")
-      write.csv(x = df, file = fname, row.names = FALSE)
-    }
-    ```
-
 ### How to find files
+
+Get all regional files
 
 ``` r
 ## Get matching files from the `processed` subdirectory
-dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
+dir(path = ".", pattern = "gapminder_gdp.*.csv")
 ```
 
 ### Read files using a for loop
@@ -1274,25 +1244,46 @@ dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
     ## Create an empty list
     df_list <- list()
 
-    ## Get the locations of the matching files
-    file_names <- dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
-    file_paths <- file.path("../processed", file_names)
+    # Get list of files to read
+    file_names <- dir(path = "../data", pattern = "gapminder_gdp.*.csv")
 
-    for (f in file_paths){
-      df_list[[f]] <- read.csv(f, stringsAsFactors = TRUE)
+    # Read files into data frames
+    for (f in file_names){
+      df_list[[f]] <- read.csv(file = file.path("../data", f, stringsAsFactors = TRUE))
     }
     ```
 
-2.  Access the list items to view the individual data frames
+2.  Check our data for compatibility
 
     ``` r
-    length(df_list)
-    names(df_list)
-    lapply(df_list, length)
-    df_list[["north_america_1952.csv"]]
+    # Check data frame dimensions
+    for (name in names(df_list)) {
+      print(name)
+      print(dim(df_list[[name]]))
+    }
+
+    # What's going on with the Americas?
+    for (name in names(df_list)) {
+      print(name)
+      print(dim(df_list[[name]]))
+      print(colnames(df_list[[name]]))
+    }
     ```
 
-### Read files using apply
+3.  Drop the continent column for Americas
+
+    ``` r
+    americas <- df_list[["gapminder_gdp_americas.csv"]]
+    df_list[["gapminder_gdp_americas.csv"]] <- americas[, ! colnames(americas) %in% c("continent")]
+    ```
+
+4.  Concatenate data frames
+
+    ``` r
+    df <- do.call(rbind, df_list)
+    ```
+
+### (Optional) Read files using apply
 
 1.  Instead of a for loop that handles each file individually, use a single vectorized function.
 

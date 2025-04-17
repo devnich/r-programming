@@ -1098,7 +1098,7 @@ north_america <- c("Canada", "Mexico", "United States")
 See data/curriculum.Rmd
 
 ** Reading and writing data
-*** Create sample data sets and write them to the `processed` directory
+*** COMMENT Create sample data sets and write them to the `processed` directory
 1. Preliminaries
    #+BEGIN_SRC R
    if (!dir.exists("../processed")) {
@@ -1121,7 +1121,7 @@ See data/curriculum.Rmd
    }
    #+END_SRC
 
-3. (Optional) Version 2: Bypass ~calcGDP~ function
+3. Version 2: Bypass ~calcGDP~ function
    #+BEGIN_SRC R
    for (year in unique(gapminder$year)) {
      df <- gapminder[gapminder$year == year, ]
@@ -1132,9 +1132,10 @@ See data/curriculum.Rmd
    #+END_SRC
 
 *** How to find files
+Get all regional files
 #+BEGIN_SRC R
 ## Get matching files from the `processed` subdirectory
-dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
+dir(path = ".", pattern = "gapminder_gdp.*.csv")
 #+END_SRC
 
 *** Read files using a for loop
@@ -1143,24 +1144,43 @@ dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
    ## Create an empty list
    df_list <- list()
 
-   ## Get the locations of the matching files
-   file_names <- dir(path = "../processed", pattern = "north_america_[1-9]*.csv")
-   file_paths <- file.path("../processed", file_names)
+   # Get list of files to read
+   file_names <- dir(path = "../data", pattern = "gapminder_gdp.*.csv")
 
-   for (f in file_paths){
-     df_list[[f]] <- read.csv(f, stringsAsFactors = TRUE)
+   # Read files into data frames
+   for (f in file_names){
+     df_list[[f]] <- read.csv(file = file.path("../data", f, stringsAsFactors = TRUE))
    }
    #+END_SRC
 
-2. Access the list items to view the individual data frames
+2. Check our data for compatibility
    #+BEGIN_SRC R
-   length(df_list)
-   names(df_list)
-   lapply(df_list, length)
-   df_list[["north_america_1952.csv"]]
+   # Check data frame dimensions
+   for (name in names(df_list)) {
+     print(name)
+     print(dim(df_list[[name]]))
+   }
+
+   # What's going on with the Americas?
+   for (name in names(df_list)) {
+     print(name)
+     print(dim(df_list[[name]]))
+     print(colnames(df_list[[name]]))
+   }
    #+END_SRC
 
-*** Read files using apply
+3. Drop the continent column for Americas
+   #+BEGIN_SRC R
+   americas <- df_list[["gapminder_gdp_americas.csv"]]
+   df_list[["gapminder_gdp_americas.csv"]] <- americas[, ! colnames(americas) %in% c("continent")]
+   #+END_SRC
+
+4. Concatenate data frames
+   #+BEGIN_SRC R
+   df <- do.call(rbind, df_list)
+   #+END_SRC
+
+*** (Optional) Read files using apply
 1. Instead of a for loop that handles each file individually, use a single vectorized function.
    #+BEGIN_SRC R
    df_list <- lapply(file_paths, read.csv, stringsAsFactors = TRUE)
