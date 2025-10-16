@@ -3,6 +3,35 @@
 
 #+TITLE: Programming in R
 #+AUTHOR: Derek Devnich
+* Curriculum rearrangement
+1. R for social sciences, chapter 1
+   - Rstudio
+   - Data types
+   - Vectors
+   - Sub setting vectors
+   - Missing values
+2. Data frames
+   - Import gapminder
+   - Discuss structure
+   - Subsetting
+   - Missing values
+   - Cbind
+   - Write output
+3. Functions
+4. Lists
+5. Flow control
+6. Data munging
+   - Import desert plots
+   - Factors
+   - Dplyr tibbles
+   - Pipes
+   - Filters
+   - Joins
+
+** Notes
+- Steal gapminder order from Python
+- Exercises from Soc Sci, Ecology, updated main
+
 * Fundamentals (Week 1)
 ** Introduction to RStudio
 *** Orientation

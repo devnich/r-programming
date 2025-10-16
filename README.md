@@ -1,36 +1,69 @@
-- [<span class="toc-section-number">1</span> Fundamentals (Week 1)](#fundamentals-week-1)
-  - [<span class="toc-section-number">1.1</span> Introduction to RStudio](#introduction-to-rstudio)
-  - [<span class="toc-section-number">1.2</span> Introduction to R](#introduction-to-r)
-  - [<span class="toc-section-number">1.3</span> Project management with RStudio](#project-management-with-rstudio)
-  - [<span class="toc-section-number">1.4</span> Seeking help](#seeking-help)
-  - [<span class="toc-section-number">1.5</span> Data structures](#data-structures)
-  - [<span class="toc-section-number">1.6</span> Creating data frames](#creating-data-frames)
-  - [<span class="toc-section-number">1.7</span> Subsetting data](#subsetting-data)
-- [<span class="toc-section-number">2</span> Building Programs in R (Week 2)](#building-programs-in-r-week-2)
-  - [<span class="toc-section-number">2.1</span> Control flow](#control-flow)
-  - [<span class="toc-section-number">2.2</span> Vectorization](#vectorization-1)
-  - [<span class="toc-section-number">2.3</span> Higher-order functions](#higher-order-functions)
-  - [<span class="toc-section-number">2.4</span> Functions explained](#functions-explained)
-  - [<span class="toc-section-number">2.5</span> Reading and writing data](#reading-and-writing-data)
-- [<span class="toc-section-number">3</span> Tidyverse (Week 3)](#tidyverse-week-3)
-  - [<span class="toc-section-number">3.1</span> Data frame manipulation with dplyr](#data-frame-manipulation-with-dplyr)
-  - [<span class="toc-section-number">3.2</span> Data frame manipulation with tidyr](#data-frame-manipulation-with-tidyr)
-  - [<span class="toc-section-number">3.3</span> Additional tidyverse libraries](#additional-tidyverse-libraries)
-  - [<span class="toc-section-number">3.4</span> (Optional) Database interfaces](#optional-database-interfaces)
-- [<span class="toc-section-number">4</span> Creating publication-quality graphics with ggplot2 (Week 4)](#creating-publication-quality-graphics-with-ggplot2-week-4)
-- [<span class="toc-section-number">5</span> Plots and exploratory data analysis in R](#plots-and-exploratory-data-analysis-in-r)
-  - [<span class="toc-section-number">5.1</span> Why do we plot our data?](#why-do-we-plot-our-data)
-  - [<span class="toc-section-number">5.2</span> What do you need to know about your data?](#what-do-you-need-to-know-about-your-data)
-  - [<span class="toc-section-number">5.3</span> Motivating exaample: Anscombe quartet](#motivating-exaample-anscombe-quartet)
-- [<span class="toc-section-number">6</span> ggplot2](#ggplot2)
-  - [<span class="toc-section-number">6.1</span> Grammar of graphics](#grammar-of-graphics)
-  - [<span class="toc-section-number">6.2</span> Read the docs](#read-the-docs)
-  - [<span class="toc-section-number">6.3</span> Basic plotting functions](#basic-plotting-functions)
-  - [<span class="toc-section-number">6.4</span> Libraries](#libraries)
-- [<span class="toc-section-number">7</span> Endnotes](#endnotes)
-  - [<span class="toc-section-number">7.1</span> Credits](#credits)
-  - [<span class="toc-section-number">7.2</span> References](#references)
-  - [<span class="toc-section-number">7.3</span> Data Sources](#data-sources)
+- [<span class="toc-section-number">1</span> Curriculum rearrangement](#curriculum-rearrangement)
+  - [<span class="toc-section-number">1.1</span> Notes](#notes)
+- [<span class="toc-section-number">2</span> Fundamentals (Week 1)](#fundamentals-week-1)
+  - [<span class="toc-section-number">2.1</span> Introduction to RStudio](#introduction-to-rstudio)
+  - [<span class="toc-section-number">2.2</span> Introduction to R](#introduction-to-r)
+  - [<span class="toc-section-number">2.3</span> Project management with RStudio](#project-management-with-rstudio)
+  - [<span class="toc-section-number">2.4</span> Seeking help](#seeking-help)
+  - [<span class="toc-section-number">2.5</span> Data structures](#data-structures)
+  - [<span class="toc-section-number">2.6</span> Creating data frames](#creating-data-frames)
+  - [<span class="toc-section-number">2.7</span> Subsetting data](#subsetting-data)
+- [<span class="toc-section-number">3</span> Building Programs in R (Week 2)](#building-programs-in-r-week-2)
+  - [<span class="toc-section-number">3.1</span> Control flow](#control-flow)
+  - [<span class="toc-section-number">3.2</span> Vectorization](#vectorization-1)
+  - [<span class="toc-section-number">3.3</span> Higher-order functions](#higher-order-functions)
+  - [<span class="toc-section-number">3.4</span> Functions explained](#functions-explained)
+  - [<span class="toc-section-number">3.5</span> Reading and writing data](#reading-and-writing-data)
+- [<span class="toc-section-number">4</span> Tidyverse (Week 3)](#tidyverse-week-3)
+  - [<span class="toc-section-number">4.1</span> Data frame manipulation with dplyr](#data-frame-manipulation-with-dplyr)
+  - [<span class="toc-section-number">4.2</span> Data frame manipulation with tidyr](#data-frame-manipulation-with-tidyr)
+  - [<span class="toc-section-number">4.3</span> Additional tidyverse libraries](#additional-tidyverse-libraries)
+  - [<span class="toc-section-number">4.4</span> (Optional) Database interfaces](#optional-database-interfaces)
+- [<span class="toc-section-number">5</span> Creating publication-quality graphics with ggplot2 (Week 4)](#creating-publication-quality-graphics-with-ggplot2-week-4)
+- [<span class="toc-section-number">6</span> Plots and exploratory data analysis in R](#plots-and-exploratory-data-analysis-in-r)
+  - [<span class="toc-section-number">6.1</span> Why do we plot our data?](#why-do-we-plot-our-data)
+  - [<span class="toc-section-number">6.2</span> What do you need to know about your data?](#what-do-you-need-to-know-about-your-data)
+  - [<span class="toc-section-number">6.3</span> Motivating exaample: Anscombe quartet](#motivating-exaample-anscombe-quartet)
+- [<span class="toc-section-number">7</span> ggplot2](#ggplot2)
+  - [<span class="toc-section-number">7.1</span> Grammar of graphics](#grammar-of-graphics)
+  - [<span class="toc-section-number">7.2</span> Read the docs](#read-the-docs)
+  - [<span class="toc-section-number">7.3</span> Basic plotting functions](#basic-plotting-functions)
+  - [<span class="toc-section-number">7.4</span> Libraries](#libraries)
+- [<span class="toc-section-number">8</span> Endnotes](#endnotes)
+  - [<span class="toc-section-number">8.1</span> Credits](#credits)
+  - [<span class="toc-section-number">8.2</span> References](#references)
+  - [<span class="toc-section-number">8.3</span> Data Sources](#data-sources)
+
+# Curriculum rearrangement
+
+1.  R for social sciences, chapter 1
+    - Rstudio
+    - Data types
+    - Vectors
+    - Sub setting vectors
+    - Missing values
+2.  Data frames
+    - Import gapminder
+    - Discuss structure
+    - Subsetting
+    - Missing values
+    - Cbind
+    - Write output
+3.  Functions
+4.  Lists
+5.  Flow control
+6.  Data munging
+    - Import desert plots
+    - Factors
+    - Dplyr tibbles
+    - Pipes
+    - Filters
+    - Joins
+
+## Notes
+
+- Steal gapminder order from Python
+- Exercises from Soc Sci, Ecology, updated main
 
 # Fundamentals (Week 1)
 
