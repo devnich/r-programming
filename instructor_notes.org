@@ -1,7 +1,81 @@
 #+STARTUP: fold indent
 #+OPTIONS: tex:t toc:2 H:6 ^:{}
 
-* Comments from UC Merced statistics instructors
+* R for Public Health
+** COMMENT Audience and needs
+1. Most students 1st and 2nd years
+   - 1st years in Psych stats class
+   - some 2nd and 3rd years
+2. descriptive, regression, some visualization
+3. Merging datasets
+4. ggplot preferred to dplyr for optional sections
+
+** Curriculum
+https://datacarpentry.github.io/r-socialsci/
+
+** Day 1
+*** Before we start
+1. Explain directories and OneDrive
+2. Create directories through file manager (not RStudio) and move data
+
+*** Introduction to R
+
+*** Starting with data
+1. Use data frames, not tibbles
+2. Filtering data frames by criteria - use R Programming  lesson
+   #+BEGIN_SRC R
+   small.villages <- safi[safi$no_membrs < 7,]
+   small.mud.villages <- safi[safi$no_membrs < 7 & safi$respondent_wall_type %in% c("muddaub", "sunbricks"),]
+   room.count <- small.mud.villages[, c("village", "rooms")]
+   #+END_SRC
+
+3. 10 minutes on Factors
+   #+BEGIN_SRC R
+   # Convert chr to factor
+   wall.factor <- factor(safi$respondent_wall_type)
+   str(wall.factor)
+   nlevels(wall.factor)
+
+   # Change order of levels
+   levels(wall.factor)
+   wall.factor <- factor(wall.factor, levels = c("muddaub","sunbricks","burntbricks","cement"))
+   levels(wall.factor)
+
+   # Update data frame
+   safi$respondent_wall_type <- wall.factor
+   #+END_SRC
+
+4. (Skip) Replace "NULL" with NA for tests:
+   #+BEGIN_SRC R
+   df$memb_assoc[df$memb_assoc == "NULL"] <- NA
+   #+END_SRC
+
+5. Parse dates with lubridate:
+   #+BEGIN_SRC R
+   library(lubridate)
+
+   parse_date_time(dates, "YmdHMSz")
+   #+END_SRC
+
+** Day 2
+1. (Skip) Flow control
+2. ggplot2
+
+* R for Reproducible Scientific Analysis
+1. Make sure to emphasize good practices: put code in scripts, and make sure they’re version controlled. Encourage students to create script files for challenges.
+2. If you’re working in a cloud environment, get them to upload the gapminder data after the second lesson.
+3. Make sure to emphasize that matrices are vectors underneath the hood and data frames are lists underneath the hood: this will explain a lot of the esoteric behaviour encountered in basic operations.
+4. Vector recycling and function stacks are probably best explained with diagrams on a whiteboard.
+5. Be sure to actually go through examples of an R help page: help files can be intimidating at first, but knowing how to read them is tremendously useful.
+6. Be sure to show the CRAN task views, look at one of the topics.
+7. There’s a lot of content: move quickly through the earlier lessons. Their extensiveness is mostly for purposes of learning by osmosis: so that their memory will trigger later when they encounter a problem or some esoteric behaviour.
+8. Key lessons to take time on:
+   - Data subsetting - conceptually difficult for novices
+   - Functions - learners especially struggle with this
+   - Data structures - worth being thorough, but you can go through it quickly.
+9. Don’t worry about being correct or knowing the material back-to-front. Use mistakes as teaching moments: the most vital skill you can impart is how to debug and recover from unexpected errors.
+
+* COMMENT Comments from UC Merced statistics instructors
 ** Brad LeVeck
 In the past, I've pointed incoming students towards this free Data Camp Introduction to R ( https://www.datacamp.com/courses/free-introduction-to-r ), and I think the topics listed are pretty close to what I'd consider essential. If I had to augment it, I'd say:
 
@@ -19,25 +93,19 @@ If I had to pick something that I would like our students to have a firmer grasp
 
 I hope that helps and let me know if I can give you any more info! Lace and Dan might be good people to ask as well, since they see the students in the Fall.
 
-* Instructor notes for "R for Reproducible Scientific Analysis"
-Make sure to emphasize good practices: put code in scripts, and make sure they’re version controlled. Encourage students to create script files for challenges.
+* COMMENT How to export this document to other formats
+** Export to Github-flavored Markdown using Pandoc
+Do this if you want code syntax highlighting and a table of contents on Github.
 
-If you’re working in a cloud environment, get them to upload the gapminder data after the second lesson.
+1. Generate Markdown file
+   #+BEGIN_SRC bash
+   pandoc -f org -t gfm --toc --toc-depth=2 --wrap=none -N -s instructor_notes.org -o instructor_notes.md
+   #+END_SRC
 
-Make sure to emphasize that matrices are vectors underneath the hood and data frames are lists underneath the hood: this will explain a lot of the esoteric behaviour encountered in basic operations.
-
-Vector recycling and function stacks are probably best explained with diagrams on a whiteboard.
-
-Be sure to actually go through examples of an R help page: help files can be intimidating at first, but knowing how to read them is tremendously useful.
-
-Be sure to show the CRAN task views, look at one of the topics.
-
-There’s a lot of content: move quickly through the earlier lessons. Their extensiveness is mostly for purposes of learning by osmosis: so that their memory will trigger later when they encounter a problem or some esoteric behaviour.
-
-Key lessons to take time on:
-
-- Data subsetting - conceptually difficult for novices
-- Functions - learners especially struggle with this
-- Data structures - worth being thorough, but you can go through it quickly.
-
-Don’t worry about being correct or knowing the material back-to-front. Use mistakes as teaching moments: the most vital skill you can impart is how to debug and recover from unexpected errors.
+2. Delete anything above the Table of Contents, e.g.:
+   #+BEGIN_EXAMPLE
+   -------------------
+     Programming in R
+     Derek Devnich
+   -------------------
+   #+END_EXAMPLE
