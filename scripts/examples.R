@@ -1,7 +1,7 @@
 ##-------------------------------------------------
 ##  Code examples from the R fundamentals workshop
 ##-------------------------------------------------
-
+setwd("/Users/gilgamesh/Code/carpentry/r-programming/scripts")
 ##-------------------------
 ##  Data Structures
 ##-------------------------
@@ -146,24 +146,24 @@ df <- as.data.frame(matrix(1:matrix_length, nrow = row, ncol = col))
 names(df) <- letters[1:col]
 
 ## NRI tidyverse in the wild
-deaths %>% rename (age_group = "Ten-Year Age Groups",
-                   injury_mechanism = "Injury Mechanism & All Other Leading Causes") %>%
-    rename_with (tolower) %>%
-    mutate (precov = if_else(year < 2020, 'precov', 'postcov')) %>%
-    group_by (age_group, race, gender, injury mechanism, precov) %>%
-    summarise (across (c(deaths, population), mean)) %>%
-    pivot_wider (names_from = 'precov', values_from = c(deaths, population)) %>%
-    select (!c(ends_with('NA'))) %>%
-    na.omit() %>%
-    mutate (death_increases = deaths_postcov - deaths_precov) %>%
-    arrange (desc(death_increases)) %>%
-    group_by (age_group, race, gender) %>%
-    filter (death increases == max(death increases)) %>%
-    ungroup %>%
-        arrange (desc(death_increases)) %>%
-        select (age_group, race, gender, injury _mechanism, death _increases) %>%
-        filter (age_group %in% c('15-24 years', '25-34 years', '25-44 years', '45-54 years')) %>%
-        print (n=32)
+# deaths %>% rename (age_group = "Ten-Year Age Groups",
+#                    injury_mechanism = "Injury Mechanism & All Other Leading Causes") %>%
+#     rename_with (tolower) %>%
+#     mutate(precov = if_else(year < 2020, 'precov', 'postcov')) %>%
+#     group_by (age_group, race, gender, injury mechanism, precov) %>%
+#     summarise (across (c(deaths, population), mean)) %>%
+#     pivot_wider (names_from = 'precov', values_from = c(deaths, population)) %>%
+#     select (!c(ends_with('NA'))) %>%
+#     na.omit() %>%
+#     mutate (death_increases = deaths_postcov - deaths_precov) %>%
+#     arrange (desc(death_increases)) %>%
+#     group_by (age_group, race, gender) %>%
+#     filter (death increases == max(death increases)) %>%
+#     ungroup %>%
+#         arrange (desc(death_increases)) %>%
+#         select (age_group, race, gender, injury _mechanism, death _increases) %>%
+#         filter (age_group %in% c('15-24 years', '25-34 years', '25-44 years', '45-54 years')) %>%
+#         print (n=32)
 
 ##-------------------------------------------------
 ## Basic Visualization
