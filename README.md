@@ -1,5 +1,6 @@
 - [<span class="toc-section-number">1</span> Curriculum rearrangement](#curriculum-rearrangement)
   - [<span class="toc-section-number">1.1</span> Notes](#notes)
+  - [<span class="toc-section-number">1.2</span> R for Social Sciences order](#r-for-social-sciences-order)
 - [<span class="toc-section-number">2</span> Fundamentals (Week 1)](#fundamentals-week-1)
   - [<span class="toc-section-number">2.1</span> Introduction to RStudio](#introduction-to-rstudio)
   - [<span class="toc-section-number">2.2</span> Introduction to R](#introduction-to-r)
@@ -10,7 +11,7 @@
   - [<span class="toc-section-number">2.7</span> Subsetting data](#subsetting-data)
 - [<span class="toc-section-number">3</span> Building Programs in R (Week 2)](#building-programs-in-r-week-2)
   - [<span class="toc-section-number">3.1</span> Control flow](#control-flow)
-  - [<span class="toc-section-number">3.2</span> Vectorization](#vectorization-1)
+  - [<span class="toc-section-number">3.2</span> Vectorization and data validation](#vectorization-and-data-validation)
   - [<span class="toc-section-number">3.3</span> Higher-order functions](#higher-order-functions)
   - [<span class="toc-section-number">3.4</span> Functions explained](#functions-explained)
   - [<span class="toc-section-number">3.5</span> Reading and writing data](#reading-and-writing-data)
@@ -64,6 +65,19 @@
 
 - Steal gapminder order from Python
 - Exercises from Soc Sci, Ecology, updated main
+
+## R for Social Sciences order
+
+1.  Before we start
+2.  Introduction to R
+3.  Starting with data
+4.  Building programs (from this curriculum)
+    1.  Conditionals
+    2.  Iteration
+    3.  Reading and writing data
+5.  Data wrangling with dplyr
+6.  (Optional) Statistical model syntax
+7.  (Optional) Data visualization with ggplot2
 
 # Fundamentals (Week 1)
 
@@ -740,6 +754,9 @@ names(v) <- letters[1:5]
 
     ``` r
     v["a"]
+    v[c("a", "c")]
+
+    # This also works
     v[names(v) %in% c("a", "c")]
     ```
 
@@ -830,10 +847,25 @@ Data frames have characteristics of both lists and matrices.
 4.  Filter by contents
 
     ``` r
+    # Which rows include Mexico?
+    gapminder$country == "Mexico"
+
+    # Filter dataframe to just get Mexico
     gapminder[gapminder$country == "Mexico",]
+    ```
+
+5.  Complex filtering
+
+    ``` r
     north_america <- c("Canada", "Mexico", "United States")
+
+    # North American countries
     gapminder[gapminder$country %in% north_america,]
+
+    # North American countries in 21st century
     gapminder[gapminder$country %in% north_america & gapminder$year > 1999,]
+
+    # Only select variables with filtered data
     gapminder[gapminder$country %in% north_america & gapminder$year > 1999, c("country", "pop")]
     ```
 
@@ -866,7 +898,7 @@ See /scripts/curriculum.Rmd
     x <- 8
 
     if (x >= 10) {
-      print("x is greater than or equal to 10")
+      print("x is big")
     }
     ```
 
@@ -874,9 +906,9 @@ See /scripts/curriculum.Rmd
 
     ``` r
     if (x >= 10) {
-      print("x is greater than or equal to 10")
+      print("x is big")
     } else {
-      print("x is less than 10")
+      print("x is small")
     }
     ```
 
@@ -884,11 +916,11 @@ See /scripts/curriculum.Rmd
 
     ``` r
     if (x >= 10) {
-      print("x is greater than or equal to 10")
+      print("x is big")
     } else if (x > 5) {
-      print("x is greater than 5, but less than 10")
+      print("x is medium")
     } else {
-      print("x is less than 5")
+      print("x is small")
     }
     ```
 
@@ -908,7 +940,7 @@ Subsetting is frequently an alternative to if-else statements in R
     }
     ```
 
-3.  Nested For loop
+3.  (Optional) Nested For loop
 
     ``` r
     for (i in 1:5) {
@@ -920,9 +952,9 @@ Subsetting is frequently an alternative to if-else statements in R
 
 4.  This is where we skip the example where we append things to the end of a data frame. For loops are slow, vectorize operations are fast (and idiomatic). Use for loops where they're the appropriate tool (e.g., loading files, cycling through whole data sets, etc). We will see more of this in the section on reading and writing data.
 
-## Vectorization
+## Vectorization and data validation
 
-### Vector operations are element-wise by default
+### (Optional review) Vector operations are element-wise by default
 
 ``` r
 x <- 1:4
@@ -947,44 +979,69 @@ x + z
 1.  Do the elements match a criterion?
 
     ``` r
-    x > 2
-    a <- (x > 2) # you can assign the output to a variable
+    v <- 1:5
+    v > 2
 
     # Evaluate a boolean vector
-    any(a)
-    all(a)
+    any(v > 2)
+    all(v > 2)
     ```
 
-2.  Vectorize your tests
+2.  Data validation with logical comparisons
 
     ``` r
-    x <- 1:4
+    north_america <- c("Canada", "Mexico", "United States")
 
-    if (any(x < 2)) {
-      print("Some x less than 2")
-    }
+    # dataframe of North American countries
+    df <- gapminder[gapminder$country %in% north_america,]
 
-    if (all(x < 2)){
-      print("All x less than 2")
-    }
+    # Are all of the country entries from North America?
+    all(df$country %in% north_america)
+    all(gapminder$country %in% north_america)
     ```
 
-3.  Can you detect missing data?
+### Working with missing data
+
+1.  Detecting missing data
 
     ``` r
     nan_vec <- c(1, 3, NaN)
 
-    ## Which elements are NaN?
+    # Which elements are NaN?
     is.nan(nan_vec)
 
-    ## Which elements are not NaN?
-    !is.nan(nan_vec)
-
-    ## Are any elements NaN?
+    # Are any elements NaN?
     any(is.nan(nan_vec))
 
-    ## Are all elements NaN?
-    all(is.nan(nan_vec))
+    # Aside: Which elements are not NaN?
+    !is.nan(nan_vec)
+    ```
+
+2.  Calculations with missing data
+
+    ``` r
+    # Operations with missing values return missing values
+    mean(nan_vec)
+
+    # R uses all values by default
+    help(mean)
+
+    # Drop missing values before operations
+    mean(nan_vec, na.rm = TRUE)
+    ```
+
+3.  How you handle missing data depends on how much is missing, whether it's missing at random, whether you think you can impute missing values, etc.
+
+    ``` r
+    surveys <- read.csv("surveys.csv")
+
+    # Is any data missing?
+    any(is.na(surveys$hindfoot_length))
+
+    # How much data is missing? TRUE is 1 and FALSE is 0, so the sum of NaN
+    # gives you the number of missing cases.
+    sum(is.na(surveys$hindfoot_length))/
+      length(surveys$hindfoot_length)
     ```
 
 ### Matrix operations are also element-wise by default
@@ -1124,7 +1181,7 @@ Functions let you encapsulate and re-use chunks of code. This has several benefi
 
     ``` r
     # Convert Fahrenheit to Celcius
-    f_to_celcius <- function(temp) {
+    f.to.celcius <- function(temp) {
       celcius <- (temp - 32) * (5/9)
       return(celcius)
     }
@@ -1133,9 +1190,9 @@ Functions let you encapsulate and re-use chunks of code. This has several benefi
 3.  Call the function
 
     ``` r
-    f_to_celcius(32)
+    f.to.celcius(32)
 
-    boiling <- f_to_celcius(212)
+    boiling <- f.to.celcius(212)
     ```
 
 ### Combining functions
@@ -1143,13 +1200,13 @@ Functions let you encapsulate and re-use chunks of code. This has several benefi
 Define a second function and call the first function within the second.
 
 ``` r
-f_to_kelvin <- function(temp) {
-  celcius <- f_to_celcius(temp)
+f.to.kelvin <- function(temp) {
+  celcius <- f.to.celcius(temp)
   kelvin <- celcius + 273.15
   return(kelvin)
 }
 
-f_to_kelvin(212)
+f.to.kelvin(212)
 ```
 
 ### Most functions work with collections
@@ -1159,32 +1216,34 @@ f_to_kelvin(212)
 temps <- seq(from = 1, to = 101, by = 10)
 
 # Vectorized calculation (fast)
-f_to_kelvin(temps)
+f.to.kelvin(temps)
 
 # Apply
-sapply(temps, f_to_kelvin)
+sapply(temps, f.to.kelvin)
 ```
 
-### Defensive programming
+### (Optional) Defensive programming
+
+This is better illustrated with the realistic examples in the following section.
 
 1.  Check whether input meets criteria before proceeding (this is \`assert\` in other languages).
 
     ``` r
-    f_to_celcius <- function(temp) {
+    f.to.celcius <- function(temp) {
       ## Check inputs
       stopifnot(is.numeric(temp), temp > -460)
       celcius <- (temp - 32) * (5/9)
       return(celcius)
     }
 
-    f_to_celcius("a")
-    f_to_celcius(-470)
+    f.to.celcius("a")
+    f.to.celcius(-470)
     ```
 
 2.  Fail with a custom error if criterion not met
 
     ``` r
-    f_to_celcius <- function(temp) {
+    f.to.celcius <- function(temp) {
       if(!is.numeric(temp)) {
         stop("temp must be a numeric vector")
       }
@@ -1198,7 +1257,7 @@ sapply(temps, f_to_kelvin)
 
 ``` r
 ## Prerequisites
-gapminder <- read.csv("../data/gapminder_data.csv", stringsAsFactors = TRUE)
+gapminder <- read.csv("data/gapminder_data.csv", stringsAsFactors = TRUE)
 north_america <- c("Canada", "Mexico", "United States")
 ```
 
@@ -1273,11 +1332,11 @@ dir(path = ".", pattern = "gapminder_gdp.*.csv")
     df_list <- list()
 
     # Get list of files to read
-    file_names <- dir(path = "../data", pattern = "gapminder_gdp.*.csv")
+    file_names <- dir(path = "data", pattern = "gapminder_gdp.*.csv")
 
     # Read files into data frames
     for (f in file_names){
-      df_list[[f]] <- read.csv(file = file.path("../data", f, stringsAsFactors = TRUE))
+      df_list[[f]] <- read.csv(file = file.path("data", f), stringsAsFactors = TRUE)
     }
     ```
 
